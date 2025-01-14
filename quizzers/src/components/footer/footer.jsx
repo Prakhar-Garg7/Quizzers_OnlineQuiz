@@ -8,8 +8,8 @@ export default function Footer() {
                     <div className="mb-6 md:mb-0">
                         <Link to="/" className="flex items-center">
                             <img
-                                src="https://alexharkness.com/wp-content/uploads/2020/06/logo-2.png"
-                                className="mr-3 h-16"
+                                src="https://eu-central.storage.cloudconvert.com/tasks/5ddd5a9d-53c9-45c5-ab6b-c2965429d63d/Screenshot%202025-01-15%20003302.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20250114%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20250114T190321Z&X-Amz-Expires=86400&X-Amz-Signature=0edeb8698662a1ec2db3de37ee538e3195f357d95272da431b0967c0d5ca6b77&X-Amz-SignedHeaders=host&response-content-disposition=inline%3B%20filename%3D%22Screenshot%202025-01-15%20003302.png%22&response-content-type=image%2Fpng&x-id=GetObject"
+                                className="mr-1 h-16"
                                 alt="Logo"
                             />
                         </Link>
@@ -72,7 +72,7 @@ export default function Footer() {
                     <span className="text-sm text-gray-500 sm:text-center">
                         © 2025
                         <a className="hover:underline">
-                            keshavk27
+                            Quizzers
                         </a>
                         . All Rights Reserved.
                     </span>
