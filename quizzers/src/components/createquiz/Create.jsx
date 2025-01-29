@@ -11,7 +11,7 @@ export default function CreateQuiz() {
             ...questions,
             {
                 questionText: "",
-                options: [{desc: ""}, {desc: ""}, {desc: ""}, {desc: ""}],
+                options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
                 correctAnswer: "",
             },
         ]);
@@ -90,10 +90,11 @@ export default function CreateQuiz() {
                             type="text"
                             className="w-full p-2 mb-2 border border-gray-300 rounded"
                             placeholder={`Option ${oIndex + 1}`}
-                            value={option}
+                            value={option.desc}
                             onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
                         />
                     ))}
+
 
                     {/* Correct Answer */}
                     <select
@@ -103,9 +104,10 @@ export default function CreateQuiz() {
                     >
                         <option value="">Select Correct Answer</option>
                         {question.options.map((option, oIndex) => (
-                            <option key={oIndex} value={option}>
-                                {option || `Option ${oIndex + 1}`}
+                            <option key={oIndex} value={option.desc}>
+                                {option.desc || `Option ${oIndex + 1}`}
                             </option>
+
                         ))}
                     </select>
                 </div>
