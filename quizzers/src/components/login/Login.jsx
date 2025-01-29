@@ -11,7 +11,7 @@ export default function Login() {
         return emailRegex.test(email);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
 
         let hasErrors = false;
@@ -32,8 +32,27 @@ export default function Login() {
         setErrors(newErrors);
 
         if (!hasErrors) {
-            alert("Login successful!");
-            // Proceed with form submission (e.g., API call)
+            try {
+                const response = await fetch("http://localhost:4003/api/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                if (response.ok) {
+                    alert("Login successful!");
+                    setEmail("");
+                    setPassword("");
+                    
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.message}`);
+                }
+            } catch (error) {
+                alert(`Network error: ${error.message}`);
+            }
         }
     };
 

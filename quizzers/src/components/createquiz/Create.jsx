@@ -11,7 +11,7 @@ export default function CreateQuiz() {
             ...questions,
             {
                 questionText: "",
-                options: ["", "", "", ""],
+                options: [{desc: ""}, {desc: ""}, {desc: ""}, {desc: ""}],
                 correctAnswer: "",
             },
         ]);
@@ -27,7 +27,7 @@ export default function CreateQuiz() {
     // Handle updating an option's text
     const handleOptionChange = (qIndex, oIndex, value) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[qIndex].options[oIndex] = value;
+        updatedQuestions[qIndex].options[oIndex].desc = value;
         setQuestions(updatedQuestions);
     };
 

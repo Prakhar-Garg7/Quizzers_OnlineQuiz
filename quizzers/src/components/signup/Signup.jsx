@@ -43,7 +43,7 @@ export default function Signup() {
         if (!hasErrors) {
             // Send data to backend
             try {
-                const response = await fetch("https://your-backend-api.com/signup", {
+                const response = await fetch("http://localhost:4003/api/auth/signup", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
