@@ -38,8 +38,45 @@ export default function CreateQuiz() {
         setQuestions(updatedQuestions);
     };
 
+    //validating quiz data
+    const validateQuiz = () => {
+        if (!quizTitle.trim()) {
+            alert("Quiz title is required.");
+            return false;
+        }
+
+        if (!quizDescription.trim()) {
+            alert("Quiz description is required.");
+            return false;
+        }
+
+        for (let i = 0; i < questions.length; i++) {
+            if (!questions[i].questionText.trim()) {
+                alert(`Question ${i + 1} must have text.`);
+                return false;
+            }
+
+            for (let j = 0; j < questions[i].options.length; j++) {
+                if (!questions[i].options[j].desc.trim()) {
+                    alert(`All options for Question ${i + 1} must be filled.`);
+                    return false;
+                }
+            }
+
+            if (!questions[i].correctAnswer.trim()) {
+                alert(`Correct answer for Question ${i + 1} must be selected.`);
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     // Handle form submission
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (!validateQuiz()) {
+            return;
+        }
         const quizData = {
             title: quizTitle,
             description: quizDescription,
@@ -47,6 +84,30 @@ export default function CreateQuiz() {
         };
 
         console.log("Quiz Data:", quizData);
+        try {
+            const response = await fetch("http://localhost:4003/api/quiz/create", 
+             {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(quizData),
+            });
+
+            if (response.ok) {
+                alert("Quiz created successfully");
+                setQuizTitle("");
+                setQuizDescription("");
+                setQuestions([]);
+
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message}`);
+            }
+        } catch (error) {
+            alert(`Network error: ${error.message}`);
+        }
+
         // Send `quizData` to your backend using fetch or axios
     };
 
