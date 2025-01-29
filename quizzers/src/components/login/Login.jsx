@@ -35,6 +35,7 @@ export default function Login() {
             try {
                 const response = await fetch("http://localhost:4003/api/auth/login", {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },

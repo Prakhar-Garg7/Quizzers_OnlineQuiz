@@ -45,6 +45,7 @@ export default function Signup() {
             try {
                 const response = await fetch("http://localhost:4003/api/auth/signup", {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
                     },

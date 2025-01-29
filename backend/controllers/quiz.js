@@ -8,7 +8,7 @@ const create = async(req, res) => {
         if(!title || !description || !questions){
             res.status(400).json({message: "Either title or description or questions are not provided"});
         }
-
+        console.log(title,description,questions);
         const newQuiz = new Quiz({title, description, questions});
         await newQuiz.save();
 
@@ -26,12 +26,18 @@ const create = async(req, res) => {
 
         res.status(200).json({message: "Quiz created successfully", quiz: newQuiz});
     } catch(error){
+        console.log(error);
         res.status(500).json({error: error.message})
     }
 }
 
 const getAll = async(req, res) => {
-    
+    try{
+        const quizzes = await Quiz.find({});
+        res.status(200).json({message: 'Quizzes fetched successfully', quizzes});
+    } catch(error){
+        res.status(500).json({error: error.message});
+    }
 }
 
-module.exports = {create};
+module.exports = {create, getAll};

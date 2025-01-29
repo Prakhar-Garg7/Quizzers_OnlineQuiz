@@ -88,6 +88,7 @@ export default function CreateQuiz() {
             const response = await fetch("http://localhost:4003/api/quiz/create", 
              {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -100,11 +101,10 @@ export default function CreateQuiz() {
                 setQuizDescription("");
                 setQuestions([]);
 
-            } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
-            }
+            } 
+            console.log(response);
         } catch (error) {
+            console.log(error);
             alert(`Network error: ${error.message}`);
         }
 
@@ -165,8 +165,8 @@ export default function CreateQuiz() {
                     >
                         <option value="">Select Correct Answer</option>
                         {question.options.map((option, oIndex) => (
-                            <option key={oIndex} value={option.desc}>
-                                {option.desc || `Option ${oIndex + 1}`}
+                            <option key={oIndex} value={oIndex}>
+                                {oIndex}
                             </option>
 
                         ))}
