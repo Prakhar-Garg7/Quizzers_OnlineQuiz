@@ -1,34 +1,31 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate();
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage("");
         try {
-            const response=await fetch("API call krenge baad me",{
-                method:"POST",
-                headers:{
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({email}),
-        }); 
-        if(response.ok)
-        {
-            setMessage("Password reset OTP has been sent to your registered email.")
-        }
-        else{
-            const mssg=await response.json();
-            alert(`Error: ${mssg.message}`)
-        }             
+            const response = await axios.post("API call krenge baad me", { email });
+
+            if (response.status === 200) {
+                setMessage("Password reset OTP has been sent to your registered email.");
+                navigate("/verify-otp", { state: { email } });
+            }
         } catch (error) {
-            alert(`Network error: ${error.message}`);
+            if (error.response) {
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert(`Network error: ${error.message}`);
+            }
         }
     };
-
     return (
         <div className="mx-auto w-full max-w-7xl">
             {/* Header Section */}
