@@ -15,7 +15,7 @@ export default function ForgotPassword() {
             const response = await axios.post("http://localhost:4003/api/auth/sendEmail", 
             { 
                 email:email,
-                subject: OTPVerification, 
+                subject: "OTPVerification", 
             },
             {
                 headers:{"Content-Type": "application/json" },

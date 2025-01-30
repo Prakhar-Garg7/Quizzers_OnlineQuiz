@@ -46,14 +46,14 @@ export default function VerifyOTP() {
 
     const handleResendOTP = async () => {
         setIsResendDisabled(true);
-        setTimer(30);
+        setTimer(45);
         setMessage("Sending new OTP...");
 
         try {
             const response = await axios.post("http://localhost:4003/api/auth/sendEmail",
                 {
                     email: email,
-                    subject: OTPVerification,
+                    subject: "OTPVerification",
                 },
                 {
                     headers: { "Content-Type": "application/json" },
@@ -79,7 +79,7 @@ export default function VerifyOTP() {
                 {
                     email: email,
                     token: enteredOTP,
-                    subject: OTPVerification,
+                    subject: "OTPVerification",
                 });
 
             if (response.status === 200) {

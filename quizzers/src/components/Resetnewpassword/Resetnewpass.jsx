@@ -23,7 +23,7 @@ export default function ResetPassword() {
             const response = await axios.post("http://localhost:4003/api/auth/setNewPassword", 
             { 
                 email: email, 
-                newpassword:newpassword, 
+                newPassword:newpassword, 
             });
 
             if (response.status === 200) {
