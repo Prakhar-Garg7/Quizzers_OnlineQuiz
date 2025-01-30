@@ -18,7 +18,7 @@ export default function ForgotPassword() {
         }); 
         if(response.ok)
         {
-            setMessage("Password reset link has been sent to your registered email.")
+            setMessage("Password reset OTP has been sent to your registered email.")
         }
         else{
             const mssg=await response.json();
