@@ -11,7 +11,7 @@ export default function Login() {
         return emailRegex.test(email);
     };
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         let hasErrors = false;
@@ -46,7 +46,7 @@ export default function Login() {
                     alert("Login successful!");
                     setEmail("");
                     setPassword("");
-                    
+
                 } else {
                     const errorData = await response.json();
                     alert(`Error: ${errorData.message}`);
@@ -102,6 +102,9 @@ export default function Login() {
                             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                         </div>
 
+
+
+
                         {/* Login Button */}
                         <button
                             type="submit"
@@ -111,23 +114,11 @@ export default function Login() {
                         </button>
                     </form>
 
-                    {/* Google Login Button */}
-                    <div className="mt-6 text-center">
-                        <button
-                            className="inline-flex items-center px-6 py-3 text-white bg-red-600 rounded-lg font-medium hover:opacity-75"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                className="mr-2"
-                                fill="white"
-                            >
-                                <path d="M21.35 11.1h-9.34v2.73h5.66a5.08 5.08 0 01-2.16 3.35v2.8h3.48c2-1.84 3.36-4.57 3.36-7.88 0-.92-.1-1.82-.3-2.7zm-9.34 6.48a5.42 5.42 0 01-4.94-3.36h-2.9v2.85a9.27 9.27 0 007.84 4.3c2.28 0 4.34-.79 5.97-2.09l-2.94-2.66a5.19 5.19 0 01-3.03.96zm-7.84-6.73h2.85a5.42 5.42 0 010-3.1h-2.85v3.1zm0-4.35h2.9a5.42 5.42 0 014.94-3.36v-2.85a9.27 9.27 0 00-7.84 4.3zm7.84-6.48v2.85a5.42 5.42 0 014.9 3.36h2.91a9.27 9.27 0 00-7.81-4.3z" />
-                            </svg>
-                            Login with Google
-                        </button>
+                    {/* Forgot Password Link */}
+                    <div className="text-center">
+                        <Link to="/forgot-password" className="text-orange-700 text-sm hover:underline">
+                            Forgot Password?
+                        </Link>
                     </div>
 
                     {/* Sign Up Link */}
