@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function ResetPassword() {
-    const [password, setPassword] = useState("");
+    const [newpassword, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
@@ -14,13 +14,17 @@ export default function ResetPassword() {
         e.preventDefault();
         setMessage("");
 
-        if (password !== confirmPassword) {
+        if (newpassword !== confirmPassword) {
             alert("Passwords do not match.");
             return;
         }
 
         try {
-            const response = await axios.post("API call krenge baad me", { email, password });
+            const response = await axios.post("http://localhost:4003/api/auth/setNewPassword", 
+            { 
+                email: email, 
+                newpassword:newpassword, 
+            });
 
             if (response.status === 200) {
                 setMessage("Password updated successfully!");
@@ -52,7 +56,7 @@ export default function ResetPassword() {
                             type="password"
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-700"
                             placeholder="Enter new password"
-                            value={password}
+                            value={newpassword}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
