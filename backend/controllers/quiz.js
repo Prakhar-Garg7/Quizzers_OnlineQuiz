@@ -40,4 +40,15 @@ const getAll = async(req, res) => {
     }
 }
 
-module.exports = {create, getAll};
+const getOne = async(req, res) => {
+    try{
+        const quizFetched = await Quiz.findById(req.params.id);
+        if(!quizFetched) res.status(404).json("Quiz not found");
+        res.status(200).json({message: 'Quiz fetched successfully', quizFetched});
+    } catch(error){
+        console.log("error: ", error);
+        res.status(500).json({error: error.message});
+    }
+}
+
+module.exports = {create, getAll, getOne};
