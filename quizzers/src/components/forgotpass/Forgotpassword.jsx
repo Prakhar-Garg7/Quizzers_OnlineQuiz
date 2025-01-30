@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+ 
 export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
@@ -12,7 +12,16 @@ export default function ForgotPassword() {
         e.preventDefault();
         setMessage("");
         try {
-            const response = await axios.post("API call krenge baad me", { email });
+            const response = await axios.post("http://localhost:4003/api/auth/sendEmail", 
+            { 
+                email:email,
+                subject: OTPVerification, 
+            },
+            {
+                headers:{"Content-Type": "application/json" },
+                withCredentials: true,
+            }
+        );
 
             if (response.status === 200) {
                 setMessage("Password reset OTP has been sent to your registered email.");
