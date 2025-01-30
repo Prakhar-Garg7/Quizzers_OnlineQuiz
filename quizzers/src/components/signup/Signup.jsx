@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 
 export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errors, setErrors] = useState({ email: "", password: "", confirmPassword: "" });
-
+    
+    const navigate=useNavigate();
     // Email format validation
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,7 +44,8 @@ export default function Signup() {
         if (!hasErrors) {
             // Send data to backend
             try {
-                const response = await fetch("http://localhost:4003/api/auth/signup", {
+                const response = await fetch("http://localhost:4003/api/auth/sendEmail", 
+                {
                     method: "POST",
                     credentials: "include",
                     headers: {
@@ -53,10 +55,8 @@ export default function Signup() {
                 });
 
                 if (response.ok) {
-                    alert("Signup successful!");
-                    setEmail("");
-                    setPassword("");
-                    setConfirmPassword("");
+                    alert("Verification email sent");
+                    navigate("/verifyemailsent", { state: { email } });
                 } else {
                     const errorData = await response.json();
                     alert(`Error: ${errorData.message}`);

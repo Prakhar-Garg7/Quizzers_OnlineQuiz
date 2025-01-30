@@ -14,6 +14,8 @@ import CreateQuiz from './components/createquiz/Create.jsx'
 import ForgotPassword from './components/forgotpass/Forgotpassword.jsx'
 import VerifyOTP from './components/Verifyotp/Verifyotp.jsx'
 import ResetPassword from './components/Resetnewpassword/Resetnewpass.jsx'
+import VerifyEmailSent from './components/signup/Verifyemailsent.jsx'
+import VerifyEmail from './components/signup/Verifyemail.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
