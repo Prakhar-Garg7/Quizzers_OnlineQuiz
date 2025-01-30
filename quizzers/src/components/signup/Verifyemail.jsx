@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function VerifyEmail() {
-    const { token } = useParams();
+    const { token, email } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -15,6 +15,7 @@ export default function VerifyEmail() {
                 const response = await axios.post("http://localhost:4003/api/auth/verify",
                 {
                    token:token,
+                   email: email,
                    subject:"EmailVerification"
                 },
                 {
@@ -39,7 +40,7 @@ export default function VerifyEmail() {
         };
 
         verifyEmail();
-    }, [token]);
+    }, [token, email]);
 
     // Redirect to login page after 2 seconds if verification is successful
     useEffect(() => {

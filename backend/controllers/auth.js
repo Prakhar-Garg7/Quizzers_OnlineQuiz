@@ -89,7 +89,7 @@ const sendEmail = async (req, res) => {
         const userEmail = req.body.email;
         const subject = req.body.subject;
 
-        const record = await Token.findOne({email});
+        const record = await Token.findOne({email: userEmail});
         if(record) await Token.deleteOne({_id: record._id});
 
         const transporter = nodemailer.createTransport({
@@ -185,15 +185,9 @@ const verify = async (req, res) => {
 const setNewPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log("email: ", email);
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
-        }
-        const isPasswordValid = await bcrypt.compare(req.body.oldPassword, user.password);
-
-        if (!isPasswordValid) {
-            return res.status(400).json({ message: "Incorrect password" });
         }
         user.password = await bcrypt.hash(req.body.newPassword, 10);
         await user.save();
