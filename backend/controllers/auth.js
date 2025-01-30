@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-const OTP = require('../models/otp');
 const crypto = require('crypto');
 const Token = require('../models/token');
 
@@ -58,10 +57,10 @@ const login = async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({error: "User not found"});
+            return res.status(404).json({ error: "User not found" });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password); 
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Incorrect password" });
@@ -85,9 +84,13 @@ const login = async (req, res) => {
     }
 }
 
-const sendVerificationEmail = async (req, res) => {
+const sendEmail = async (req, res) => {
     try {
-        const userEmail = req.user.email;
+        const userEmail = req.body.email;
+        const subject = req.body.subject;
+
+        const record = await Token.findOne({email});
+        if(record) await Token.deleteOne({_id: record._id});
 
         const transporter = nodemailer.createTransport({
             service: 'Gmail',
@@ -97,26 +100,43 @@ const sendVerificationEmail = async (req, res) => {
             },
         });
 
-        const token = crypto.randomBytes(26).toString('hex').slice(0, 35);
+        if (subject === "EmailVerification") {
+            const token = crypto.randomBytes(26).toString('hex').slice(0, 35);
 
-        const newTokenRecord = new Token({
-            token,
-            email: req.user.email
-        });
+            const newTokenRecord = new Token({
+                token,
+                email: userEmail,
+                sub: subject,
+            });
 
-        await newTokenRecord.save();
+            await newTokenRecord.save();
 
-        const verificationUrl = `http://localhost:4003/auth/setVerify/:${token}`;
+            const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}/${userEmail}`;
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: userEmail,
-            subject: 'Verify Your Email Address',
-            html: `<p>Please click the link below to verify your email address:</p>
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'Verify Your Email Address',
+                html: `<p>Please click the link below to verify your email address:</p>
              <a href="${verificationUrl}">${verificationUrl}</a>`,
-        };
+            };
 
-        await transporter.sendMail(mailOptions);
+            await transporter.sendMail(mailOptions);
+        } else {
+            const randomNumber = Math.floor(100000 + Math.random() * 900000);
+
+            const newRecord = new Token({ token: randomNumber, email: userEmail, sub: subject });
+            await newRecord.save();
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: userEmail,
+                subject: 'OTP for forgot password',
+                html: `<p>Please enter the OTP ${randomNumber}</p>`,
+            };
+
+            await transporter.sendMail(mailOptions);
+        }
 
         res.status(200).json({ message: "Email sent successfully" });
     } catch (error) {
@@ -125,69 +145,37 @@ const sendVerificationEmail = async (req, res) => {
     }
 };
 
-const verifyEmail = async (req, res) => {
+const verify = async (req, res) => {
     try {
-        const token = req.params.token;
-        const record = await Token.findOne({ token });
+        const { email, token } = req.body;
+        const record = await Token.findOne({ email });
         if (!record) {
-            res.status(401).json("Invalid token sent");
+            return res.status(401).json("Incorrect email sent");
         }
-        const user = await User.findOne({ email: record.email });
-        if (!user) return res.status(400).json("User not found");
-        user.isVerified = true;
-        await Token.deleteOne({ token });
 
-        res.status(200).json({ message: "User verified successfully" });
-    } catch (error) {
-        console.error('Verification error:', error);
-        res.status(500).json({ message: error.message });
-    }
-};
+        const user = await User.findOne({email});
+        if(! user) return res.json({error: "user not found"});
 
-const sendForgotPasswordEmail = async (req, res) => {
-    try {
-        const userEmail = req.body.email;
+        if (record.sub === "EmailVerification") {
+            if (record.token !== token) {
+                await User.deleteOne({_id: user._id});
+                await Token.deleteOne({ _id: record._id });
+                return res.status(401).json("Incorrect token sent");
+            }
+            user.isVerified = true;
+            await user.save();
+            await Token.deleteOne({ _id: record._id });
 
-        const transporter = nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const randomNumber = Math.floor(100000 + Math.random() * 900000);
-
-        const newOTP = new OTP({ otp: randomNumber, email: userEmail });
-        await newOTP.save();
-
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: userEmail,
-            subject: 'OTP for forgot password',
-            html: `<p>Please enter the OTP ${randomNumber}</p>`,
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        res.status(200).json({
-            message: "OTP sent successfully"
-        })
-    } catch (error) {
-        console.log("error: ", error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-const verifyForgotPasswordOTP = async (req, res) => {
-    try {
-        const otp = req.params.otp;
-        const record = await OTP.findOne({ otp });
-        if (!record) {
-            res.status(401).json("Invalid otp sent");
+            return res.status(200).json({ message: 'user verified successfully' });
         }
-        await OTP.deleteOne({ otp });
-        res.status(200).json("Correct OTP. Please forward for new passowrd");
+        if (record.token !== token) {
+            await User.deleteOne({_id: user._id});
+            await Token.deleteOne({ _id: record._id });
+            return res.status(401).json("Incorrect otp sent");
+        }
+        await Token.deleteOne({ _id: record._id });
+
+        return res.status(200).json({ message: 'otp verified successfully' });
     } catch (error) {
         console.error('Verification error:', error);
         res.status(500).json({ message: error.message });
@@ -200,9 +188,9 @@ const setNewPassword = async (req, res) => {
         console.log("email: ", email);
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({error: "User not found"});
+            return res.status(404).json({ error: "User not found" });
         }
-        const isPasswordValid = await bcrypt.compare(req.body.oldPassword, user.password); 
+        const isPasswordValid = await bcrypt.compare(req.body.oldPassword, user.password);
 
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Incorrect password" });
@@ -210,11 +198,11 @@ const setNewPassword = async (req, res) => {
         user.password = await bcrypt.hash(req.body.newPassword, 10);
         await user.save();
 
-        res.status(200).json({message: "new password set successfully"});
-    } catch(error){
+        res.status(200).json({ message: "new password set successfully" });
+    } catch (error) {
         console.log("error: ", error);
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message })
     }
 }
 
-module.exports = { register, sendVerificationEmail, verifyEmail, login, sendForgotPasswordEmail, verifyForgotPasswordOTP, setNewPassword };
+module.exports = { register, sendEmail, verify, login, setNewPassword };

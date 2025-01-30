@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider,createRoutesFromElements, Route } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, createRoutesFromElements, Route } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import Home from './components/home/home.jsx'
@@ -17,27 +17,24 @@ import ResetPassword from './components/Resetnewpassword/Resetnewpass.jsx'
 import VerifyEmailSent from './components/signup/Verifyemailsent.jsx'
 import VerifyEmail from './components/signup/Verifyemail.jsx'
 
-
-const router=createBrowserRouter(  
+const router = createBrowserRouter(
   createRoutesFromElements(
-  <Route path='/' element={<App/>}>
-    <Route path='' element={<Home/>}/>
-    <Route path='about' element={<About/>}/>
-    <Route path='contact' element={<ContactUs/>}/>
-    <Route path='user/:id' element={<User/>}/>
-    <Route path='github' element={<Github/>}/>
-    <Route path='login' element={<Login/>}/>
-    <Route path='signup' element={<Signup/>}/>
-    <Route path='createquiz' element={<CreateQuiz/>}/>
-    <Route path='forgot-password' element={<ForgotPassword/>}/>
-    <Route path='verify-otp' element={<VerifyOTP/>}/>
-    <Route path='reset-password' element={<ResetPassword/>}/>
-    <Route path='verifyemailsent' element={<VerifyEmailSent/>}/>
-    <Route path='verify-email' element={<VerifyEmail/>}/>
-
-
-  </Route>
-)
+    <Route path='/' element={<App />}>
+      <Route path='' element={<Home />} />
+      <Route path='about' element={<About />} />
+      <Route path='contact' element={<ContactUs />} />
+      <Route path='user/:id' element={<User />} />
+      <Route path='github' element={<Github />} />
+      <Route path='login' element={<Login />} />
+      <Route path='signup' element={<Signup />} />
+      <Route path='createquiz' element={<CreateQuiz />} />
+      <Route path='forgot-password' element={<ForgotPassword />} />
+      <Route path='verify-otp' element={<VerifyOTP />} />
+      <Route path='reset-password' element={<ResetPassword />} />
+      <Route path='verifyemailsent' element={<VerifyEmailSent />} />
+      <Route path='verify-email' element={<VerifyEmail />} />
+    </Route>
+  )
 )
 
 createRoot(document.getElementById('root')).render(

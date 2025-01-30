@@ -51,4 +51,17 @@ const getOne = async(req, res) => {
     }
 }
 
+// exports.evaluate = async(req, res) => {
+//     try{
+//         const id = req.params.id;
+//         const userEmail = req.user.email;
+//         const user = await User.findOne({email});
+//         if(! user) return res.status(404).json("User not found");
+
+//     } catch(error){
+//         console.log("error: ", error);
+//         res.status(500).json({error: error.message});
+//     }
+// }
+
 module.exports = {create, getAll, getOne};
