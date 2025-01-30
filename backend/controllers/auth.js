@@ -153,12 +153,12 @@ const verify = async (req, res) => {
             return res.status(401).json("Incorrect email sent");
         }
 
-        const user = await User.findOne({email});
-        if(! user) return res.json({error: "user not found"});
+        const user = await User.findOne({ email });
+        if (!user) return res.json({ error: "user not found" });
 
         if (record.sub === "EmailVerification") {
             if (record.token !== token) {
-                await User.deleteOne({_id: user._id});
+                await User.deleteOne({ _id: user._id });
                 await Token.deleteOne({ _id: record._id });
                 return res.status(401).json("Incorrect token sent");
             }
@@ -169,7 +169,7 @@ const verify = async (req, res) => {
             return res.status(200).json({ message: 'user verified successfully' });
         }
         if (record.token !== token) {
-            await User.deleteOne({_id: user._id});
+            await User.deleteOne({ _id: user._id });
             await Token.deleteOne({ _id: record._id });
             return res.status(401).json("Incorrect otp sent");
         }
