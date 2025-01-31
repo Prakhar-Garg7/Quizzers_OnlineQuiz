@@ -16,7 +16,7 @@ export default function AllQuizzes() {
                     headers: { "Content-Type": "application/json" },
                     withCredentials: true,
                 });
-                setQuizzes(response.data.quizes);  
+                setQuizzes(response.data.quizzes);  
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching quizzes:", error);
