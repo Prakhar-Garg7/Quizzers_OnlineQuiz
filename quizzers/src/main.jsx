@@ -17,6 +17,7 @@ import ResetPassword from './components/Resetnewpassword/Resetnewpass.jsx'
 import VerifyEmailSent from './components/signup/Verifyemailsent.jsx'
 import VerifyEmail from './components/signup/Verifyemail.jsx'
 import TakeQuiz from './components/Takequiz/Takequiz.jsx'
+import AllQuizzes from './components/Allquizes/Allquiz.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,8 @@ const router = createBrowserRouter(
       <Route path='verifyemailsent' element={<VerifyEmailSent />} />
       <Route path='verify-email/:token/:email' element={<VerifyEmail />} />
       <Route path='takequiz/:quizId' element={<TakeQuiz />} />
+      <Route path='allquizes' element={<AllQuizzes />} />
+
     </Route>
   )
 )
