@@ -1,67 +1,129 @@
 const Quiz = require("../models/quiz");
 const User = require("../models/user");
 
-const create = async(req, res) => {
-    try{
-        const {title, description, questions} = req.body;
+const create = async (req, res) => {
+    try {
+        const { title, description, questions } = req.body;
 
-        if(!title || !description || !questions){
-            res.status(400).json({message: "Either title or description or questions are not provided"});
+        if (!title || !description || !questions) {
+            res.status(400).json({ message: "Either title or description or questions are not provided" });
         }
-        console.log(title,description,questions);
-        const newQuiz = new Quiz({title, description, questions});
+        console.log(title, description, questions);
+        const newQuiz = new Quiz({ title, description, questions });
         await newQuiz.save();
 
-        const user = await User.findOne({email: req.user.email});
-        if(!user){
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) {
             res.status(404).json("User not found");
         }
 
         if (!user.createdQuizzes) {
-            user.createdQuizzes = [];  
+            user.createdQuizzes = [];
         }
 
         user.createdQuizzes.push(newQuiz._id);
         await user.save();
 
-        res.status(200).json({message: "Quiz created successfully", quiz: newQuiz});
-    } catch(error){
+        res.status(200).json({ message: "Quiz created successfully", quiz: newQuiz });
+    } catch (error) {
         console.log(error);
-        res.status(500).json({error: error.message})
+        res.status(500).json({ error: error.message })
     }
 }
 
-const getAll = async(req, res) => {
-    try{
+const getAll = async (req, res) => {
+    try {
         const quizzes = await Quiz.find({});
-        res.status(200).json({message: 'Quizzes fetched successfully', quizzes});
-    } catch(error){
-        res.status(500).json({error: error.message});
+        res.status(200).json({ message: 'Quizzes fetched successfully', quizzes });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }
 
-const getOne = async(req, res) => {
-    try{
+const getOne = async (req, res) => {
+    try {
         const quizFetched = await Quiz.findById(req.params.id);
-        if(!quizFetched) res.status(404).json("Quiz not found");
-        res.status(200).json({message: 'Quiz fetched successfully', quizFetched});
-    } catch(error){
+        if (!quizFetched) res.status(404).json("Quiz not found");
+        res.status(200).json({ message: 'Quiz fetched successfully', quizFetched });
+    } catch (error) {
         console.log("error: ", error);
-        res.status(500).json({error: error.message});
+        res.status(500).json({ error: error.message });
     }
 }
 
-// exports.evaluate = async(req, res) => {
-//     try{
-//         const id = req.params.id;
-//         const userEmail = req.user.email;
+const evaluate = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const userEmail = req.user.email;
+        const user = await User.findOne({ email: userEmail });
+        if (!user) return res.status(404).json("User not found");
+        const userAnswers = req.body.userAnswers;
+        let myMarks = 0;
+        const quiz = await Quiz.findById(id);
+        if (!quiz) return res.status(404).json("Quiz not found");
+        for (let i = 0; i < quiz.questions.length; i++) {
+            const question = quiz.questions[i];
+            if (question.correctAnswer == userAnswers[i]) myMarks++;
+        }
+        user.marks.set(id, myMarks);
+
+        await user.save();
+        res.status(200).json({ message: "Quiz evaluated successfully", score: myMarks });
+    } catch (error) {
+        console.log("error: ", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+const getQuizLeaderboard = async (req, res) => {
+    try {
+        const user = await User.findOne({email: req.user.email});
+        if(! user) return res.status(404).json("User not found");
+        const id = req.params.id;
+        let myMarks = 0;
+        if(user.marks.has(id)) myMarks = user.marks.get(id);
+        const quiz = await Quiz.findById(id);
+        if (!quiz) return res.status(404).json("Quiz not found");
+        const users = await User.find({});
+        const map = new Map();
+        for (const user of users) {
+            if (!user.marks) user.marks = new Map(); 
+            const userMap = user.marks;
+            if (userMap.has(id)) map.set(user, userMap.get(id));
+            else map.set(user, 0);
+        }
+
+        const leaderboard = Array.from(map.entries());
+
+        res.status(200).json({ message: "Quiz leaderboard fetched successfully", leaderboard, user, myMarks });
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+// const getFullLeaderboard = async (req, res) => {
+//     try {
 //         const user = await User.findOne({email});
 //         if(! user) return res.status(404).json("User not found");
-
-//     } catch(error){
-//         console.log("error: ", error);
-//         res.status(500).json({error: error.message});
+//         const id = req.params.id;
+//         const myMarks = 0;
+//         if(user.marks.has(id)) myMarks = user.marks.get(id);
+//         const quiz = await Quiz.findById(id);
+//         if (!quiz) return res.status(404).json("Quiz not found");
+//         const users = await User.find({});
+//         const map = new Map();
+//         for (const user in users) {
+//             const userMap = user.marks;
+//             if (userMap.has(id)) map.set(user, userMap.get(id));
+//             else map.set(user, 0);
+//         }
+//         res.status(200).json({ message: "Quiz leaderboard fetched successfully", marks: map, user, myMarks });
+//     } catch (error) {
+//         console.log("Error: ", error);
+//         res.status(500).json({ error: error.message });
 //     }
 // }
 
-module.exports = {create, getAll, getOne};
+
+module.exports = { create, getAll, getOne, evaluate, getQuizLeaderboard };
