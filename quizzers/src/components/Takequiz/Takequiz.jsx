@@ -8,17 +8,22 @@ export default function TakeQuiz() {
     const [quiz, setQuiz] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(600);
-    const timerRef = useRef(null);             // Avoid dependency re-renders
+    const timerRef = useRef(null);      
 
     useEffect(() => {
         async function fetchQuiz() {
             try {
+                console.log("hello1");
                 const response = await axios.get(`http://localhost:4003/api/quiz/get/${quizId}`, 
                 {
                     headers: { "Content-Type": "application/json" },
                     withCredentials: true,
                 });
-                setQuiz(response.data);
+
+                console.log("hello");
+                console.log("res: ", response);
+
+                setQuiz(response.data.quizFetched);
                 setTimeLeft(response.data.duration || 600);
             } catch (error) {
                 console.error(error);
@@ -47,7 +52,7 @@ export default function TakeQuiz() {
     };
 
     const handleSubmit = async () => {
-        clearInterval(timerRef.current);  // Ensure the timer is stopped
+        clearInterval(timerRef.current);  
         const answersArray = quiz.questions.map((_, qIndex) =>
             selectedAnswers[qIndex] !== undefined ? selectedAnswers[qIndex] : -1
         );
@@ -61,6 +66,8 @@ export default function TakeQuiz() {
                     withCredentials: true 
                 }
             );
+
+            console.log("res: ", response);
 
             if (response.status === 200) {
                 alert("Quiz submitted successfully!");
@@ -86,7 +93,7 @@ export default function TakeQuiz() {
                     {quiz.questions.map((q, qIndex) => (
                         <div key={qIndex} className="p-4 mb-6 bg-gray-100 rounded-lg shadow">
                             <h3 className="text-xl font-semibold mb-2">
-                                {qIndex + 1}. {q.questionText}
+                                {qIndex + 1}. {q.question}
                             </h3>
                             {q.options.map((option, oIndex) => (
                                 <div key={oIndex} className="flex items-center mb-2">

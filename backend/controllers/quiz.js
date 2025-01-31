@@ -54,6 +54,7 @@ const getOne = async (req, res) => {
 const evaluate = async (req, res) => {
     try {
         const id = req.params.id;
+
         const userEmail = req.user.email;
         const user = await User.findOne({ email: userEmail });
         if (!user) return res.status(404).json("User not found");
@@ -77,20 +78,23 @@ const evaluate = async (req, res) => {
 
 const getQuizLeaderboard = async (req, res) => {
     try {
-        const user = await User.findOne({email: req.user.email});
-        if(! user) return res.status(404).json("User not found");
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) return res.status(404).json("User not found");
         const id = req.params.id;
-        let myMarks = 0;
-        if(user.marks.has(id)) myMarks = user.marks.get(id);
         const quiz = await Quiz.findById(id);
         if (!quiz) return res.status(404).json("Quiz not found");
+
+        let myMarks = 0;
+        if (user.marks.has(id)) myMarks = user.marks.get(id);
+
         const users = await User.find({});
         const map = new Map();
         for (const user of users) {
-            if (!user.marks) user.marks = new Map(); 
+            const userId = user._id;
+            if (!user.marks) user.marks = new Map();
             const userMap = user.marks;
-            if (userMap.has(id)) map.set(user, userMap.get(id));
-            else map.set(user, 0);
+            if (userMap.has(id)) map.set(userId, userMap.get(id));
+            else map.set(userId, 0);
         }
 
         const leaderboard = Array.from(map.entries());
@@ -102,28 +106,43 @@ const getQuizLeaderboard = async (req, res) => {
     }
 }
 
-// const getFullLeaderboard = async (req, res) => {
-//     try {
-//         const user = await User.findOne({email});
-//         if(! user) return res.status(404).json("User not found");
-//         const id = req.params.id;
-//         const myMarks = 0;
-//         if(user.marks.has(id)) myMarks = user.marks.get(id);
-//         const quiz = await Quiz.findById(id);
-//         if (!quiz) return res.status(404).json("Quiz not found");
-//         const users = await User.find({});
-//         const map = new Map();
-//         for (const user in users) {
-//             const userMap = user.marks;
-//             if (userMap.has(id)) map.set(user, userMap.get(id));
-//             else map.set(user, 0);
-//         }
-//         res.status(200).json({ message: "Quiz leaderboard fetched successfully", marks: map, user, myMarks });
-//     } catch (error) {
-//         console.log("Error: ", error);
-//         res.status(500).json({ error: error.message });
-//     }
-// }
+const getFullLeaderboard = async (req, res) => {
+    try {
+        const finalMap = new Map();
+        const quizzes = await Quiz.find({});
 
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) return res.status(404).json("User not found");
 
-module.exports = { create, getAll, getOne, evaluate, getQuizLeaderboard };
+        const myMap = new Map();
+        for (const quiz of quizzes) {
+            const quizId = quiz._id.toString();
+            if (user.marks.has(quizId)) myMap.set(quizId, user.marks.get(quizId));
+            else myMap.set(quizId, 0);
+        }
+
+        const myArr = Array.from(myMap.entries());
+
+        const users = await User.find({});
+        for (const user of users) {
+            let userMap = user.marks;
+            if (!userMap) userMap = new Map();
+            const map1 = new Map();
+            for (const quiz of quizzes) {
+                const quizId = quiz._id.toString();
+                if (userMap.has(quizId)) map1.set(quizId, userMap.get(quizId));
+                else map1.set(quizId, 0);
+            }
+            finalMap.set(user._id, map1);
+        }
+
+        const leaderboard = Array.from(finalMap, ([key, innerMap]) => [key, Object.fromEntries(innerMap)]);
+
+        res.status(200).json({ message: "Leaderboard fetched successfully", leaderboard, user, myMap: myArr });
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+module.exports = { create, getAll, getOne, evaluate, getQuizLeaderboard, getFullLeaderboard };
