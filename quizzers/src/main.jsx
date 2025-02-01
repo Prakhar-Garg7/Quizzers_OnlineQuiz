@@ -18,6 +18,10 @@ import VerifyEmailSent from './components/signup/Verifyemailsent.jsx'
 import VerifyEmail from './components/signup/Verifyemail.jsx'
 import TakeQuiz from './components/Takequiz/Takequiz.jsx'
 import AllQuizzes from './components/Allquizes/Allquiz.jsx'
+import { Provider } from 'react-redux'
+import { store, persistor } from "./store/index.js"
+import {PersistGate} from "redux-persist/integration/react"
+import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -44,6 +48,10 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <PersistGate loading={<LoadingPage />} persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGate>
+    </Provider>
   </StrictMode>,
 )

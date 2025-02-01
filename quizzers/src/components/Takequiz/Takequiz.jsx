@@ -1,38 +1,27 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+import { fetchQuiz } from "../../features/quiz/api";
+import LoadingPage from "../LoadingPage/LoadingPage";
 
 export default function TakeQuiz() {
     const { quizId } = useParams();
     const navigate = useNavigate();
+    const { quizzes, loading, error } = useSelector((state) => state.quiz)
     const [quiz, setQuiz] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [timeLeft, setTimeLeft] = useState(600);
-    const timerRef = useRef(null);      
+    const timerRef = useRef(null);
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        async function fetchQuiz() {
-            try {
-                console.log("hello1");
-                const response = await axios.get(`http://localhost:4003/api/quiz/get/${quizId}`, 
-                {
-                    headers: { "Content-Type": "application/json" },
-                    withCredentials: true,
-                });
-
-                console.log("hello");
-                console.log("res: ", response);
-
-                setQuiz(response.data.quizFetched);
-                setTimeLeft(response.data.duration || 600);
-            } catch (error) {
-                console.error(error);
-                alert("Error fetching quiz");
-                navigate("/");
-            }
+        if (quizId in quizzes) setQuiz(quizzes[quizId])
+        else {
+            dispatch(fetchQuiz(quizId))
+            setQuiz(quizzes[quizId])
         }
-        fetchQuiz();
-    }, [quizId, navigate]);
+    }, [quizId]);
 
     useEffect(() => {
         if (timeLeft <= 0) {
@@ -45,25 +34,25 @@ export default function TakeQuiz() {
         }, 1000);
 
         return () => clearInterval(timerRef.current);
-    }, [timeLeft]); 
+    }, [timeLeft]);
 
     const handleAnswerSelect = (qIndex, optionIndex) => {
         setSelectedAnswers({ ...selectedAnswers, [qIndex]: optionIndex });
     };
 
     const handleSubmit = async () => {
-        clearInterval(timerRef.current);  
+        clearInterval(timerRef.current);
         const answersArray = quiz.questions.map((_, qIndex) =>
             selectedAnswers[qIndex] !== undefined ? selectedAnswers[qIndex] : -1
         );
         try {
             const response = await axios.post(`http://localhost:4003/api/quiz/evaluate/${quizId}`,
-                { 
-                    userAnswers: answersArray 
+                {
+                    userAnswers: answersArray
                 },
-                { 
-                    headers: { "Content-Type": "application/json" }, 
-                    withCredentials: true 
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true
                 }
             );
 
@@ -80,6 +69,11 @@ export default function TakeQuiz() {
             alert("Network error");
         }
     };
+
+    if (loading) return <LoadingPage />
+    if (error) {
+        return <ErrorPage />
+    }
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-10">
