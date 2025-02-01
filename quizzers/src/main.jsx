@@ -22,6 +22,7 @@ import { Provider } from 'react-redux'
 import { store, persistor } from "./store/index.js"
 import {PersistGate} from "redux-persist/integration/react"
 import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
+import TakeQuiz1 from './components/TakeQuiz1/TakeQuiz1.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -39,7 +40,7 @@ const router = createBrowserRouter(
       <Route path='reset-password' element={<ResetPassword />} />
       <Route path='verifyemailsent' element={<VerifyEmailSent />} />
       <Route path='verify-email/:token/:email' element={<VerifyEmail />} />
-      <Route path='takequiz/:quizId' element={<TakeQuiz />} />
+      <Route path='takequiz/:quizId' element={<TakeQuiz1 />} />
       <Route path='allquizes' element={<AllQuizzes />} />
 
     </Route>

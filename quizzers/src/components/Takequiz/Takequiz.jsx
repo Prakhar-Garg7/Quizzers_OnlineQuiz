@@ -25,7 +25,7 @@ export default function TakeQuiz() {
 
     useEffect(() => {
         if (timeLeft <= 0) {
-            handleSubmit(); // Auto-submit when time is up
+            handleSubmit(); 
             return;
         }
 
