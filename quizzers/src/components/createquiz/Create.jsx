@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ddekncm4c/image/upload";          //ye temporary hai baad me env file me rakh denge
+const UPLOAD_PRESET = "quizimage"; 
+
 export default function CreateQuiz() {
     const [quizTitle, setQuizTitle] = useState("");
     const [startTime, setStartTime] = useState("");
@@ -15,6 +18,7 @@ export default function CreateQuiz() {
                 question: "",
                 options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
                 correctAnswer: "",
+                imageUrl: "", 
             },
         ]);
     };
@@ -49,6 +53,33 @@ export default function CreateQuiz() {
     };
 
     //validating quiz data
+    // Handle image upload for a question
+    const handleImageUpload = async (qIndex, event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", UPLOAD_PRESET);
+        formData.append("cloud_name","ddekncm4c")
+        try {
+            const response = await fetch(CLOUDINARY_URL, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await response.json();
+            console.log(data.imageUrl)
+            const updatedQuestions = [...questions];
+            updatedQuestions[qIndex].imageUrl = data.secure_url; 
+            setQuestions(updatedQuestions);
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Image upload failed. Try again.");
+        }
+    };
+
+    // Validate quiz data before submission
     const validateQuiz = () => {
         if (!quizTitle.trim()) {
             alert("Quiz title is required.");
@@ -97,15 +128,14 @@ export default function CreateQuiz() {
         };
 
         try {
-            const response = await fetch("http://localhost:4003/api/quiz/create",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(quizData),
-                });
+            const response = await fetch("http://localhost:4003/api/quiz/create", {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(quizData),
+            });
 
             if (response.ok) {
                 alert("Quiz created successfully");
@@ -168,6 +198,17 @@ export default function CreateQuiz() {
                         onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
                     />
 
+                    {/* Image Upload */}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        className="w-full mb-2"
+                        onChange={(e) => handleImageUpload(qIndex, e)}
+                    />
+                    {question.imageUrl && (
+                        <img src={question.imageUrl} alt="Uploaded" className="w-full max-h-48 object-contain mt-2 rounded-lg" />
+                    )}
+
                     {/* Options */}
                     {question.options.map((option, oIndex) => (
                         <input
@@ -180,7 +221,6 @@ export default function CreateQuiz() {
                         />
                     ))}
 
-
                     {/* Correct Answer */}
                     <select
                         className="w-full p-2 mb-4 border border-gray-300 rounded"
@@ -192,25 +232,18 @@ export default function CreateQuiz() {
                             <option key={oIndex} value={oIndex}>
                                 {oIndex}
                             </option>
-
                         ))}
                     </select>
                 </div>
             ))}
 
             {/* Add Question Button */}
-            <button
-                className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-                onClick={addQuestion}
-            >
+            <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4" onClick={addQuestion}>
                 Add Question
             </button>
 
             {/* Submit Button */}
-            <button
-                className="bg-green-500 text-white px-6 py-2 rounded"
-                onClick={handleSubmit}
-            >
+            <button className="bg-green-500 text-white px-6 py-2 rounded" onClick={handleSubmit}>
                 Submit Quiz
             </button>
         </div>
