@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllQuizzes } from "../../features/quiz/api";
+import { fetchAllQuizzes } from "../../features/getQuiz/api";
 import LoadingPage from "../LoadingPage/LoadingPage";
-import ErrorPage from "../ErrroPage/errorPage";
+import ErrorPage from "../ErrorPage/ErrorPage";
+import { resetState } from "../../features/quizAutoSave/slice";
+
 
 export default function AllQuizzes() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { quizzes, error, loading } = useSelector((state) => state.quiz)
+    const { quizzes, error, loading } = useSelector((state) => state.getQuiz)
 
     useEffect(() => {
         if (!quizzes.length) {
@@ -44,6 +46,9 @@ export default function AllQuizzes() {
                     </div>
                 ))}
             </div>
+            <button onClick={() => {
+                dispatch(resetState())
+            }}>Delete quizAutoSave Data</button>
         </div>
     );
 

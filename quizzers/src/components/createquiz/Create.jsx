@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 export default function CreateQuiz() {
     const [quizTitle, setQuizTitle] = useState("");
+    const [startTime, setStartTime] = useState("");
+    const [duration, setDuration] = useState(0);
     const [quizDescription, setQuizDescription] = useState("");
     const [questions, setQuestions] = useState([]);
 
@@ -10,7 +12,7 @@ export default function CreateQuiz() {
         setQuestions([
             ...questions,
             {
-                questionText: "",
+                question: "",
                 options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
                 correctAnswer: "",
             },
@@ -20,7 +22,7 @@ export default function CreateQuiz() {
     // Handle updating a question's text
     const handleQuestionChange = (index, value) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[index].questionText = value;
+        updatedQuestions[index].question = value;
         setQuestions(updatedQuestions);
     };
 
@@ -38,6 +40,14 @@ export default function CreateQuiz() {
         setQuestions(updatedQuestions);
     };
 
+    const handleStartTimeChange = (time) => {
+        setStartTime(time)
+    };
+
+    const handleDurationChange = (time) => {
+        setDuration(time)
+    };
+
     //validating quiz data
     const validateQuiz = () => {
         if (!quizTitle.trim()) {
@@ -51,7 +61,7 @@ export default function CreateQuiz() {
         }
 
         for (let i = 0; i < questions.length; i++) {
-            if (!questions[i].questionText.trim()) {
+            if (!questions[i].question.trim()) {
                 alert(`Question ${i + 1} must have text.`);
                 return false;
             }
@@ -77,38 +87,39 @@ export default function CreateQuiz() {
         if (!validateQuiz()) {
             return;
         }
+
         const quizData = {
             title: quizTitle,
             description: quizDescription,
             questions: questions,
+            startTime,
+            duration
         };
 
-        console.log("Quiz Data:", quizData);
         try {
-            const response = await fetch("http://localhost:4003/api/quiz/create", 
-             {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(quizData),
-            });
+            const response = await fetch("http://localhost:4003/api/quiz/create",
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(quizData),
+                });
 
             if (response.ok) {
                 alert("Quiz created successfully");
                 setQuizTitle("");
                 setQuizDescription("");
                 setQuestions([]);
-
-            } 
+                setStartTime("")
+                setDuration(0)
+            }
             console.log(response);
         } catch (error) {
             console.log(error);
             alert(`Network error: ${error.message}`);
         }
-
-        // Send `quizData` to your backend using fetch or axios
     };
 
     return (
@@ -130,6 +141,19 @@ export default function CreateQuiz() {
                 placeholder="Quiz Description"
                 value={quizDescription}
                 onChange={(e) => setQuizDescription(e.target.value)}
+            />
+
+            <input
+                type="datetime-local"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+            />
+
+            <input
+                type="number"
+                step={5}
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
             />
 
             {/* Questions Section */}

@@ -3,9 +3,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import axios from 'axios'
 
 export const fetchAllQuizzes = createAsyncThunk(
-    'quiz/fetchAllQuizzes',
+    'getQuiz/fetchAllQuizzes',
     async (params, thunkAPI) => {
-        try{
+        try {
             const res = await axios.get(`${config.backend_url}/api/quiz/get`,
                 {
                     headers: { "Content-Type": "application/json" },
@@ -13,42 +13,27 @@ export const fetchAllQuizzes = createAsyncThunk(
                 }
             )
             return res.data;
-        } catch(error){
-            return thunkAPI.rejectWithValue(error.response?.data || error.message)
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || error.response?.data || error.message || "Something went wrong"
+            );
         }
     }
 )
 
 export const fetchQuiz = createAsyncThunk(
-    'quiz/fetchQuiz',
+    'getQuiz/fetchQuiz',
     async (params, thunkAPI) => {
-        try{
+        try {
             const res = await axios.get(`${config.backend_url}/api/quiz/get/${params.quizId}`,
                 {
                     headers: { "Content-Type": "application/json" },
                     withCredentials: true,
                 }
             )
-            return res.data;
-        } catch(error){
+            return res.data
+        } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data || error.message)
         }
     }
 )
-
-// export const fetchQuiz = createAsyncThunk(
-//     'quiz/fetchQuiz',
-//     async (params, thunkAPI) => {
-//         try{
-//             const res = await axios.get(`${config.backend_url}/api/quiz/get/${params.quizId}`,
-//                 {
-//                     headers: { "Content-Type": "application/json" },
-//                     withCredentials: true,
-//                 }
-//             )
-//             return res.data;
-//         } catch(error){
-//             return thunkAPI.rejectWithValue(error.response?.data || error.message)
-//         }
-//     }
-// )

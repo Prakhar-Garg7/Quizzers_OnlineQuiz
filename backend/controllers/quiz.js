@@ -3,13 +3,12 @@ const User = require("../models/user");
 
 const create = async (req, res) => {
     try {
-        const { title, description, questions } = req.body;
+        const { title, description, questions, startTime, duration } = req.body;
 
-        if (!title || !description || !questions) {
-            res.status(400).json({ message: "Either title or description or questions are not provided" });
+        if (!title || !description || !questions || !startTime || !duration) {
+            res.status(400).json({ message: "Either title or description or questions or startTime or duration are not provided" });
         }
-        console.log(title, description, questions);
-        const newQuiz = new Quiz({ title, description, questions });
+        const newQuiz = new Quiz({ title, description, questions, startTime: new Date(startTime).toISOString(), duration });
         await newQuiz.save();
 
         const user = await User.findOne({ email: req.user.email });

@@ -8,7 +8,7 @@ const initialState = {
 }
 
 const slice = createSlice({
-    name: 'quiz',
+    name: 'getQuiz',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -22,10 +22,11 @@ const slice = createSlice({
                     acc[quiz._id] = quiz
                     return acc
                 }, {})
+                state.error = null
             })
             .addCase(fetchAllQuizzes.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.error
+                state.error = action.payload
             })
             .addCase(fetchQuiz.pending, (state) => {
                 state.loading = true
@@ -35,10 +36,12 @@ const slice = createSlice({
                 const quizId = action.payload.quizFetched._id;
                 const quiz = action.payload.quizFetched;
                 state.quizzes[quizId] = quiz
+
+                state.error = null
             })
             .addCase(fetchQuiz.rejected, (state, action) => {
                 state.loading = false
-                state.error = action.error
+                state.error = action.payload
             })
     }
 })
