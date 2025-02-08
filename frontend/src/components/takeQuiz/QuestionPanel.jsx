@@ -2,6 +2,9 @@ import { FaArrowCircleDown } from "react-icons/fa";
 
 export default function QuestionPanel(props) {
     const { quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps } = props;
+    const handleSubmit = () => {
+        
+    }
     return (
         <div className="w-[70%] h-auto py-10 px-7">
             {question && (
