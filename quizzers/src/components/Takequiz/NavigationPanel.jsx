@@ -1,7 +1,7 @@
 import LoadingPage from "../LoadingPage/LoadingPage";
 
 export default function NavigationPanel(props) {
-    const { questionStatus, statusCountArr, quiz, questionIdx, setQuestionIdx, handleQuestionStatus, selectedAnswers } = props;
+    const { questionStatus, statusCountArr, quiz, questionIdx, setQuestionIdx, handleQuestionStatus, selectedAnswers, handleTimestamps } = props;
 
     const statusList = [
         { label: "Not Answered", border: "border-red-700", bg: "bg-red-300" },
@@ -29,6 +29,7 @@ export default function NavigationPanel(props) {
                                     if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                                     else handleQuestionStatus(questionIdx, 0)
                                 }
+                                handleTimestamps(questionIdx, 1)
                                 setQuestionIdx(qIdx)
                             }}
                             className={`px-3 border-2 mr-2 rounded-md ${statusList[questionStatus[qIdx]].border} ${statusList[questionStatus[qIdx]].bg}`}

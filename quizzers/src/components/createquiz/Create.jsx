@@ -1,55 +1,82 @@
-import React, { useState } from "react";
-
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ddekncm4c/image/upload";          //ye temporary hai baad me env file me rakh denge
-const UPLOAD_PRESET = "quizimage"; 
+import React, { useState, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { uploadImage } from "../../features/uploadImage/api";
+import LoadingPage from "../LoadingPage/LoadingPage";
+import ErrorPage from "../ErrorPage/ErrorPage";
+import { deleteImage, resetUploadImageState } from "../../features/uploadImage/slice";
+import { createQuiz } from "../../features/createQuiz/api";
+import { setTitle as setSliceTitle, setDescription as setSliceDescription, setStartTime as setSliceStartTime, setDuration as setSliceDuration, setQuestions as setSliceQuestions, resetState as resetCreateQuizAutoSaveSlice } from "../../features/createQuizAutoSave/slice";
 
 export default function CreateQuiz() {
+    const dispatch = useDispatch();
     const [quizTitle, setQuizTitle] = useState("");
     const [startTime, setStartTime] = useState("");
     const [duration, setDuration] = useState(0);
     const [quizDescription, setQuizDescription] = useState("");
     const [questions, setQuestions] = useState([]);
+    const { urls, imageUploadLoading, imageUploadError } = useSelector((state) => state.uploadImage)
+    const { createQuizLoading, createQuizError } = useSelector((state) => state.createQuiz)
+    const { quizTitle: sliceQuizTitle, quizDescription: sliceQuizDesc, startTime: sliceStartTime, duration: sliceDuration, questions: sliceQuestions } = useSelector((state) => state.createQuizAutoSave)
+
+    useEffect(() => {
+        setQuizTitle(sliceQuizTitle)
+        setQuizDescription(sliceQuizDesc)
+        setStartTime(sliceStartTime)
+        setDuration(sliceDuration)
+        setQuestions(sliceQuestions)
+    }, [sliceQuizTitle, sliceQuizDesc, sliceStartTime, sliceDuration, sliceQuestions])
 
     // Handle adding a new question
     const addQuestion = () => {
-        setQuestions([
-            ...questions,
-            {
-                question: "",
-                options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
-                correctAnswer: "",
-                imageUrl: "", 
-            },
-        ]);
+        let arr = [...questions]
+        arr.push({
+            question: "",
+            options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
+            correctAnswer: "",
+            imageUrl: "",
+        })
+        setQuestions(arr)
+        dispatch(setSliceQuestions({ questions: arr }))
+    };
+
+    const removeQuestion = () => {
+        let arr = [...questions]
+        arr.pop()
+        setQuestions(arr)
+        dispatch(setSliceQuestions({ questions: arr }))
     };
 
     // Handle updating a question's text
     const handleQuestionChange = (index, value) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[index].question = value;
+        updatedQuestions[index] = { ...updatedQuestions[index], question: value };
         setQuestions(updatedQuestions);
+        dispatch(setSliceQuestions({ questions: updatedQuestions }))
     };
 
     // Handle updating an option's text
     const handleOptionChange = (qIndex, oIndex, value) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[qIndex].options[oIndex].desc = value;
+        const updatedOptions = [...updatedQuestions[qIndex].options];
+        updatedOptions[oIndex] = { ...updatedOptions[oIndex], desc: value };
+
+        updatedQuestions[qIndex] = { ...updatedQuestions[qIndex], options: updatedOptions };
         setQuestions(updatedQuestions);
+        dispatch(setSliceQuestions({ questions: updatedQuestions }));
     };
 
     // Handle updating the correct answer
     const handleCorrectAnswerChange = (qIndex, value) => {
         const updatedQuestions = [...questions];
-        updatedQuestions[qIndex].correctAnswer = value;
+
+        // Create a new object for the specific question instead of modifying it directly
+        updatedQuestions[qIndex] = {
+            ...updatedQuestions[qIndex],
+            correctAnswer: value
+        };
+
         setQuestions(updatedQuestions);
-    };
-
-    const handleStartTimeChange = (time) => {
-        setStartTime(time)
-    };
-
-    const handleDurationChange = (time) => {
-        setDuration(time)
+        dispatch(setSliceQuestions({ questions: updatedQuestions }));
     };
 
     //validating quiz data
@@ -58,26 +85,19 @@ export default function CreateQuiz() {
         const file = event.target.files[0];
         if (!file) return;
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", UPLOAD_PRESET);
-        formData.append("cloud_name","ddekncm4c")
-        try {
-            const response = await fetch(CLOUDINARY_URL, {
-                method: "POST",
-                body: formData,
-            });
-
-            const data = await response.json();
-            console.log(data.imageUrl)
-            const updatedQuestions = [...questions];
-            updatedQuestions[qIndex].imageUrl = data.secure_url; 
-            setQuestions(updatedQuestions);
-        } catch (error) {
-            console.error("Upload error:", error);
-            alert("Image upload failed. Try again.");
-        }
+        dispatch(uploadImage({ qIdx: qIndex, file }))
     };
+
+    useEffect(() => {
+        if (Object.entries(urls).length > 0) {
+            const updatedQuestions = questions.map((q, index) =>
+                urls[index] ? { ...q, imageUrl: urls[index] } : q
+            );
+
+            setQuestions(updatedQuestions);
+            dispatch(setSliceQuestions({ questions: updatedQuestions }));
+        }
+    }, [urls]);
 
     // Validate quiz data before submission
     const validateQuiz = () => {
@@ -118,7 +138,7 @@ export default function CreateQuiz() {
         if (!validateQuiz()) {
             return;
         }
-
+        
         const quizData = {
             title: quizTitle,
             description: quizDescription,
@@ -128,29 +148,31 @@ export default function CreateQuiz() {
         };
 
         try {
-            const response = await fetch("http://localhost:4003/api/quiz/create", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(quizData),
-            });
-
-            if (response.ok) {
-                alert("Quiz created successfully");
-                setQuizTitle("");
-                setQuizDescription("");
-                setQuestions([]);
-                setStartTime("")
-                setDuration(0)
-            }
-            console.log(response);
+            const res = await dispatch(createQuiz(quizData)).unwrap()
+            dispatch(resetUploadImageState())
+            dispatch(resetCreateQuizAutoSaveSlice())
+            setQuizTitle("")
+            setQuizDescription("")
+            setStartTime("")
+            setDuration("")
+            setQuestions([])
         } catch (error) {
-            console.log(error);
-            alert(`Network error: ${error.message}`);
+            console.log("Quiz creation failed: ", error)
         }
     };
+
+    const handleReset = () => {
+        dispatch(resetUploadImageState())
+        dispatch(resetCreateQuizAutoSaveSlice())
+        setQuizTitle("")
+        setQuizDescription("")
+        setStartTime("")
+        setDuration("")
+        setQuestions([])
+    }
+
+    if (imageUploadLoading || createQuizLoading) return <LoadingPage />
+    if (imageUploadError || createQuizError) return <ErrorPage />
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-10">
@@ -162,7 +184,10 @@ export default function CreateQuiz() {
                 className="w-full p-2 mb-4 border border-gray-300 rounded"
                 placeholder="Quiz Title"
                 value={quizTitle}
-                onChange={(e) => setQuizTitle(e.target.value)}
+                onChange={(e) => {
+                    setQuizTitle(e.target.value)
+                    dispatch(setSliceTitle({ quizTitle: e.target.value }))
+                }}
             />
 
             {/* Quiz Description */}
@@ -170,20 +195,29 @@ export default function CreateQuiz() {
                 className="w-full p-2 mb-4 border border-gray-300 rounded"
                 placeholder="Quiz Description"
                 value={quizDescription}
-                onChange={(e) => setQuizDescription(e.target.value)}
+                onChange={(e) => {
+                    setQuizDescription(e.target.value)
+                    dispatch(setSliceDescription({ quizDescription: e.target.value }))
+                }}
             />
 
             <input
                 type="datetime-local"
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
+                onChange={(e) => {
+                    setStartTime(e.target.value)
+                    dispatch(setSliceStartTime({ startTime: e.target.value }))
+                }}
             />
 
             <input
                 type="number"
                 step={5}
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+                onChange={(e) => {
+                    setDuration(e.target.value)
+                    dispatch(setSliceDuration({ duration: e.target.value }))
+                }}
             />
 
             {/* Questions Section */}
@@ -194,7 +228,7 @@ export default function CreateQuiz() {
                         type="text"
                         className="w-full p-2 mb-4 border border-gray-300 rounded"
                         placeholder="Enter question text"
-                        value={question.questionText}
+                        value={question.question}
                         onChange={(e) => handleQuestionChange(qIndex, e.target.value)}
                     />
 
@@ -206,7 +240,23 @@ export default function CreateQuiz() {
                         onChange={(e) => handleImageUpload(qIndex, e)}
                     />
                     {question.imageUrl && (
-                        <img src={question.imageUrl} alt="Uploaded" className="w-full max-h-48 object-contain mt-2 rounded-lg" />
+                        <div className="relative w-1/3 h-48 mt-2 rounded-lg bg-center bg-cover" style={{ backgroundImage: `url(${question.imageUrl})` }}>
+                            {/* Close Button */}
+                            <button
+                                className="absolute top-2 right-2 bg-gray-800 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center hover:bg-red-500"
+                                onClick={() => {
+                                    setQuestions((prevQuestions) =>
+                                        prevQuestions.map((q, index) =>
+                                            index === qIndex ? { ...q, imageUrl: "" } : q
+                                        )
+                                    );
+                                    dispatch(deleteImage({ qIdx: qIndex }))
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
                     )}
 
                     {/* Options */}
@@ -238,13 +288,18 @@ export default function CreateQuiz() {
             ))}
 
             {/* Add Question Button */}
-            <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4" onClick={addQuestion}>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 mx-1" onClick={addQuestion}>
                 Add Question
             </button>
-
+            <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4 mx-1" onClick={removeQuestion}>
+                Remove Question
+            </button>
             {/* Submit Button */}
-            <button className="bg-green-500 text-white px-6 py-2 rounded" onClick={handleSubmit}>
+            <button className="bg-green-500 text-white px-6 py-2 rounded mb-4 mx-1" onClick={handleSubmit}>
                 Submit Quiz
+            </button>
+            <button className="bg-green-500 text-white px-6 py-2 rounded mb-4 mx-1" onClick={handleReset}>
+                Reset Quiz
             </button>
         </div>
     );
