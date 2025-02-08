@@ -10,7 +10,7 @@ const app = express();
 
 app.use(
     cors({
-        origin:process.env.client
+        origin:process.env.FRONTEND_URL
         ,credentials:true
     })
 )

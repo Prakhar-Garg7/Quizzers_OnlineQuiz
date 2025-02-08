@@ -34,6 +34,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
+        console.log("Hello, entered to backend")
         const quizzes = await Quiz.find({});
         res.status(200).json({ message: 'Quizzes fetched successfully', quizzes });
     } catch (error) {
