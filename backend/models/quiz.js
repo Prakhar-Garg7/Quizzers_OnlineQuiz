@@ -8,7 +8,8 @@ const schema = new mongoose.Schema({
     questions:[{
         question: {type: String},
         options:[{desc: {type: String}}],
-        correctAnswer:{type: Number}
+        correctAnswer:{type: Number},
+        imageUrl:{type: String}
     }]
 });
 

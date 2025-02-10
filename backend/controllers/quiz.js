@@ -3,12 +3,14 @@ const User = require("../models/user");
 
 const create = async (req, res) => {
     try {
-        const { title, description, questions, startTime, duration } = req.body;
+        const { title, description, questions, startTime, duration, imageUrl } = req.body;
+
+        console.log("startTime: ", startTime, ", duration: ", duration)
 
         if (!title || !description || !questions || !startTime || !duration) {
-            res.status(400).json({ message: "Either title or description or questions or startTime or duration are not provided" });
+            res.status(400).json({ message: "Either title or description or questions or startTime or duration or imageUrl are not provided" });
         }
-        const newQuiz = new Quiz({ title, description, questions, startTime: new Date(startTime).toISOString(), duration });
+        const newQuiz = new Quiz({ title, description, questions, startTime: new Date(startTime).toISOString(), duration, imageUrl });
         await newQuiz.save();
 
         const user = await User.findOne({ email: req.user.email });
@@ -32,6 +34,7 @@ const create = async (req, res) => {
 
 const getAll = async (req, res) => {
     try {
+        console.log("Hello, entered to backend")
         const quizzes = await Quiz.find({});
         res.status(200).json({ message: 'Quizzes fetched successfully', quizzes });
     } catch (error) {

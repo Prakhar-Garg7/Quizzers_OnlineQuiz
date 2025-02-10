@@ -1,8 +1,10 @@
 import { FaArrowCircleDown } from "react-icons/fa";
 
 export default function QuestionPanel(props) {
-    const { quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr } = props;
-
+    const { quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps } = props;
+    const handleSubmit = () => {
+        
+    }
     return (
         <div className="w-[70%] h-auto py-10 px-7">
             {question && (
@@ -14,6 +16,7 @@ export default function QuestionPanel(props) {
                     <hr className="border-t-1 border-black mt-2 mb-5" />
 
                     <p className="px-3 text-xl">{question.question}</p>
+                    {question.imageUrl && <img src={question.imageUrl} alt="question Image"></img>}
 
                     {question.options.map((option, oIndex) => (
                         <div key={oIndex} className="flex items-center my-2 px-3 text-xl">
@@ -75,6 +78,7 @@ export default function QuestionPanel(props) {
                                     if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                                     else handleQuestionStatus(questionIdx, 0)
                                 }
+                                handleTimestamps(questionIdx, 1)
                                 setQuestionIdx(Math.max(questionIdx - 1, 0))
                             }}>BACK</button>
                             <button className="px-2 py-2 mr-2 bg-white border-2 border-slate-300 font-bold" onClick={() => {
@@ -82,6 +86,7 @@ export default function QuestionPanel(props) {
                                     if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                                     else handleQuestionStatus(questionIdx, 0)
                                 }
+                                handleTimestamps(questionIdx, 1)
                                 setQuestionIdx(Math.min(questionIdx + 1, quiz.questions.length - 1))
                             }}>NEXT</button>
                         </div>

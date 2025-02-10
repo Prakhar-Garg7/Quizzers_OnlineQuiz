@@ -21,7 +21,7 @@ import { Provider } from 'react-redux'
 import { store, persistor } from "./store/index.js"
 import {PersistGate} from "redux-persist/integration/react"
 import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
-import TakeQuiz from './components/takeQuiz/Takequiz.jsx'
+import TakeQuiz from './components/takeQuiz/TakeQuiz.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(

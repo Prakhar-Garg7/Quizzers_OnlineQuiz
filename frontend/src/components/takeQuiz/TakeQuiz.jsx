@@ -25,6 +25,7 @@ export default function TakeQuiz() {
         statusCountArr,
         handleSelectedAnswers,
         handleQuestionStatus,
+        handleTimestamps,
     } = useQuizHandler(quizId);
 
     const {
@@ -44,9 +45,9 @@ export default function TakeQuiz() {
                         <QuizTop title={quiz.title} timeLeft={timeLeft} />
                         <div className="flex h-auto">
                             <QuestionPanel
-                                {...{ quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr }}
+                                {...{ quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps }}
                             />
-                            <NavigationPanel {...{ questionStatus, statusCountArr, quiz, questionIdx, setQuestionIdx, handleQuestionStatus, selectedAnswers }} />
+                            <NavigationPanel {...{ questionStatus, statusCountArr, quiz, questionIdx, setQuestionIdx, handleQuestionStatus, selectedAnswers, handleTimestamps }} />
                         </div>
                     </div>
                 )

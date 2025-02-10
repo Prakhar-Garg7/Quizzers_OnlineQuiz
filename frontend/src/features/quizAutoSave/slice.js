@@ -5,6 +5,7 @@ const initialState = {
     sAnswers:{},
     qStatus: {},
     timeRem: -1,
+    timestamps:{}
 }
 
 const slice = createSlice({
@@ -32,10 +33,14 @@ const slice = createSlice({
             state.sAnswers = {}
             state.qStatus = {}
             state.timeRem = -1
-        }
+            state.timestamps = {}
+        },
+        setTimestamps(state, action){
+            state.timestamps = {...action.payload.timestamps}
+        },
     },
 })
 
-export const {setAnswer, setStatus, setQIdx, setTime, resetState} = slice.actions
+export const {setAnswer, setStatus, setQIdx, setTime, resetState, setTimestamps} = slice.actions
 
 export default slice.reducer;

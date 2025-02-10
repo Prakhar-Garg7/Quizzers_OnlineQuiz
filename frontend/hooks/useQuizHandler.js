@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { fetchQuiz } from '../src/features/getQuiz/api';
-import { setAnswer, setQIdx, setStatus } from '../src/features/quizAutoSave/slice';
+import { setAnswer, setQIdx, setStatus, setTimestamps as setSliceTimestamps } from '../src/features/quizAutoSave/slice';
 
 export function useQuizHandler(quizId) {
     const dispatch = useDispatch()
@@ -12,13 +12,36 @@ export function useQuizHandler(quizId) {
     const [statusCountArr, setStatusCountArr] = useState(new Array(5).fill(0))
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [questionStatus, setQuestionStatus] = useState({});
-    const { qIdx, sAnswers, qStatus } = useSelector((state) => state.quizAutoSave)
+    const [timestamps, setTimestamps] = useState({});
+    const { qIdx, sAnswers, qStatus, timestamps: quizAutoSaveTimestamps } = useSelector((state) => state.quizAutoSave)
 
     const handleSelectedAnswers = (qIdx, nVal) => {
         const newSelectedAnswers = { ...selectedAnswers, [qIdx]: nVal };
         setSelectedAnswers(newSelectedAnswers);
         dispatch(setAnswer({ newAnswers: newSelectedAnswers }))
     }
+
+    const handleTimestamps = (qIdx, flag) => {
+        const currTime = Date.now();
+        const newTimestamps = { ...timestamps };
+
+        if (flag == 1) {
+            const timeDelayed = Math.max(0, currTime - (newTimestamps[qIdx].prevTime));
+            newTimestamps[qIdx] = {
+                ...newTimestamps[qIdx],
+                timeSpent: newTimestamps[qIdx].timeSpent + timeDelayed,
+                prevTime: currTime
+            };
+        } else {
+            newTimestamps[qIdx] = {
+                ...newTimestamps[qIdx],
+                prevTime: currTime
+            };
+        }
+    
+        setTimestamps(newTimestamps);
+        dispatch(setSliceTimestamps({timestamps: newTimestamps}))
+    };
 
     const handleQuestionStatus = (qIdx, nVal) => {
         const newStatus = { ...questionStatus, [qIdx]: nVal };
@@ -73,12 +96,24 @@ export function useQuizHandler(quizId) {
                     return newStatus;
                 });
 
+                let newTimestamps = {};
+                const currTime = Date.now()
+                for (let i = 0; i < quiz.questions.length; i++) newTimestamps[i] = {
+                    prevTime: currTime,
+                    timeSpent: 0
+                }
+
+                setTimestamps(newTimestamps)
+
+                dispatch(setSliceTimestamps({timestamps: newTimestamps}))
+
                 setStatusCountArr(prev => prev.map((val, i) => (i === 0 ? 1 : 0)));
                 setStatusCountArr(prev => prev.map((val, i) => (i === 4 ? (quiz.questions.length - 1) : val)));
             } else {
                 setQuestion(quiz.questions[qIdx]);
                 setSelectedAnswers(sAnswers);
                 setQuestionStatus(qStatus);
+                setTimestamps(quizAutoSaveTimestamps)
 
                 let countArr = new Array(5).fill(0)
                 for (const [idx, status] of Object.entries(qStatus)) {
@@ -95,6 +130,7 @@ export function useQuizHandler(quizId) {
 
     useEffect(() => {
         if (quiz && quiz.questions) {
+            handleTimestamps(questionIdx, 0)
             setQuestion(quiz.questions[questionIdx]);
             dispatch(setQIdx({ qIdx: questionIdx }))
             if (questionStatus[questionIdx] == 4) {
@@ -133,5 +169,6 @@ export function useQuizHandler(quizId) {
         selectedAnswers,
         handleSelectedAnswers,
         handleQuestionStatus,
+        handleTimestamps,
     }
 }
