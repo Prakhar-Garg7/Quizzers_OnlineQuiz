@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ddekncm4c/image/upload";          //ye temporary hai baad me env file me rakh denge
-const UPLOAD_PRESET = "quizimage"; 
+const UPLOAD_PRESET = "quizimage";
 
 export default function CreateQuiz() {
     const [quizTitle, setQuizTitle] = useState("");
@@ -18,7 +18,7 @@ export default function CreateQuiz() {
                 question: "",
                 options: [{ desc: "" }, { desc: "" }, { desc: "" }, { desc: "" }],
                 correctAnswer: "",
-                imageUrl: "", 
+                imageUrl: "",
             },
         ]);
     };
@@ -61,7 +61,7 @@ export default function CreateQuiz() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", UPLOAD_PRESET);
-        formData.append("cloud_name","ddekncm4c")
+        formData.append("cloud_name", "ddekncm4c")
         try {
             const response = await fetch(CLOUDINARY_URL, {
                 method: "POST",
@@ -69,9 +69,9 @@ export default function CreateQuiz() {
             });
 
             const data = await response.json();
-            console.log(data.imageUrl)
+            console.log(data.secure_url)
             const updatedQuestions = [...questions];
-            updatedQuestions[qIndex].imageUrl = data.secure_url; 
+            updatedQuestions[qIndex].imageUrl = data.secure_url;
             setQuestions(updatedQuestions);
         } catch (error) {
             console.error("Upload error:", error);
@@ -199,41 +199,45 @@ export default function CreateQuiz() {
                     />
 
                     {/* Image Upload */}
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="w-full mb-2"
-                        onChange={(e) => handleImageUpload(qIndex, e)}
-                    />
-                    {question.imageUrl && (
-                        <img src={question.imageUrl} alt="Uploaded" className="w-full max-h-48 object-contain mt-2 rounded-lg" />
-                    )}
-
-                    {/* Options */}
-                    {question.options.map((option, oIndex) => (
+                    <label className="bg-gray-400 text-black-400 px-4 py-2 rounded cursor-pointer inline-block mb-2">
+                        Choose Image
                         <input
-                            key={oIndex}
-                            type="text"
-                            className="w-full p-2 mb-2 border border-gray-300 rounded"
-                            placeholder={`Option ${oIndex + 1}`}
-                            value={option.desc}
-                            onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
-                        />
-                    ))}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(qIndex, e)}
 
-                    {/* Correct Answer */}
-                    <select
-                        className="w-full p-2 mb-4 border border-gray-300 rounded"
-                        value={question.correctAnswer}
-                        onChange={(e) => handleCorrectAnswerChange(qIndex, e.target.value)}
-                    >
-                        <option value="">Select Correct Answer</option>
+                        />
+                        </label>
+                        {question.imageUrl && (
+                            <img src={question.imageUrl} alt="Uploaded" className="w-full max-h-48 object-contain mt-2 rounded-lg" />
+                        )}
+
+                        {/* Options */}
                         {question.options.map((option, oIndex) => (
-                            <option key={oIndex} value={oIndex}>
-                                {oIndex}
-                            </option>
+                            <input
+                                key={oIndex}
+                                type="text"
+                                className="w-full p-2 mb-2 border border-gray-300 rounded"
+                                placeholder={`Option ${oIndex + 1}`}
+                                value={option.desc}
+                                onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
+                            />
                         ))}
-                    </select>
+
+                        {/* Correct Answer */}
+                        <select
+                            className="w-full p-2 mb-4 border border-gray-300 rounded"
+                            value={question.correctAnswer}
+                            onChange={(e) => handleCorrectAnswerChange(qIndex, e.target.value)}
+                        >
+                            <option value="">Select Correct Answer</option>
+                            {question.options.map((option, oIndex) => (
+                                <option key={oIndex} value={oIndex}>
+                                    {oIndex+1}
+                                </option>
+                            ))}
+                        </select>
                 </div>
             ))}
 
