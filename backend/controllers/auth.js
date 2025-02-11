@@ -84,6 +84,13 @@ const login = async (req, res) => {
     }
 }
 
+const logout = (req, res) => {
+    res.clearCookie("token"); 
+    res.status(200).json({ message: "Logged out successfully" });
+};
+
+
+
 const sendEmail = async (req, res) => {
     try {
         const userEmail = req.body.email;
@@ -199,4 +206,4 @@ const setNewPassword = async (req, res) => {
     }
 }
 
-module.exports = { register, sendEmail, verify, login, setNewPassword };
+module.exports = { register, sendEmail, verify, login, setNewPassword, logout };
