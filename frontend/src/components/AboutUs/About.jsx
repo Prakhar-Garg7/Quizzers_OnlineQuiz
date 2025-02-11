@@ -6,7 +6,7 @@ const admins = [
     {
         name: "Keshav kumar",
         job: "Full Stack Developer",
-        image: "https://github.com/keshavk27.png", // Replace with actual image paths
+        image: "https://github.com/keshavk27.png",
         github: "https://github.com/keshavk27",
         linkedin: "https://www.linkedin.com/in/keshav-kumar-709aa0334",
         twitter: "https://twitter.com",
@@ -14,7 +14,7 @@ const admins = [
     {
         name: "Prakhar Garg",
         job: "Full Stack Developer",
-        image: "https://github.com/Prakhar-Garg7.png", // Replace with actual image paths
+        image: "https://github.com/Prakhar-Garg7.png", 
         github: "https://github.com/Prakhar-Garg7",
         linkedin: "https://www.linkedin.com/in/prakhar-garg-251659282",
         twitter: "https://twitter.com",
