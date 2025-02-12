@@ -7,10 +7,20 @@ const schema = new mongoose.Schema({
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     createdQuizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: Quiz }],
-    marks: {
+    result: {
         type: Map,
         of: {
-            type: Number,
+            type: {
+                score: {type: Number},
+                markedAnswers:{
+                    type:[Number],
+                    default:[]
+                },
+                timeSpent:{
+                    type:[Number],
+                    default:[]
+                }
+            }
         },
         default: {}
     }

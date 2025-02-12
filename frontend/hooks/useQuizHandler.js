@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchQuiz } from '../src/features/getQuiz/api';
 import { setAnswer, setQIdx, setStatus, setTimestamps as setSliceTimestamps } from '../src/features/quizAutoSave/slice';
+import { getQuizReport } from '../src/features/getQuizReport/api';
 
-export function useQuizHandler(quizId) {
+export default function useQuizHandler(quizId) {
     const dispatch = useDispatch()
+    const navigate = useNavigate();
     const { quizzes, loading, error } = useSelector((state) => state.getQuiz)
     const [quiz, setQuiz] = useState(null);
     const [question, setQuestion] = useState(null);
@@ -19,6 +22,19 @@ export function useQuizHandler(quizId) {
         const newSelectedAnswers = { ...selectedAnswers, [qIdx]: nVal };
         setSelectedAnswers(newSelectedAnswers);
         dispatch(setAnswer({ newAnswers: newSelectedAnswers }))
+    }
+
+    const handleSubmit = () => {
+        const newSelectedAnswers = new Array(quiz.questions.length).fill(-1)
+        for(let i = 0; i < quiz.questions.length; i++) {
+            newSelectedAnswers[i] = selectedAnswers[i];
+        }
+        const newTimeStamps = new Array(quiz.questions.length).fill(0)
+        for(let i = 0; i < quiz.questions.length; i++) {
+            newTimeStamps[i] = timestamps[i].timeSpent;
+        }
+        dispatch(getQuizReport({userAnswers: newSelectedAnswers, timeSpent: newTimeStamps}))
+        navigate(`/report/${quizId}`);
     }
 
     const handleTimestamps = (qIdx, flag) => {
@@ -170,5 +186,6 @@ export function useQuizHandler(quizId) {
         handleSelectedAnswers,
         handleQuestionStatus,
         handleTimestamps,
+        handleSubmit
     }
 }

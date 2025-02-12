@@ -1,5 +1,6 @@
+import { useSelector, useDispatch } from "react-redux"
 import { useParams } from "react-router-dom";
-import { useQuizHandler } from "../../../hooks/useQuizHandler";
+import useQuizHandler from "../../../hooks/useQuizHandler";
 import { useCountdownTimer } from "../../../hooks/useCountdownTimer";
 import QuizTop from "./QuizTop";
 import QuestionPanel from "./QuestionPanel";
@@ -9,8 +10,6 @@ import ErrorPage from "../ErrorPage/ErrorPage";
 
 export default function TakeQuiz() {
     const { quizId } = useParams()
-
-    const handleSubmit = async () => { };
 
     const {
         loading,
@@ -26,6 +25,7 @@ export default function TakeQuiz() {
         handleSelectedAnswers,
         handleQuestionStatus,
         handleTimestamps,
+        handleSubmit
     } = useQuizHandler(quizId);
 
     const {
@@ -45,7 +45,7 @@ export default function TakeQuiz() {
                         <QuizTop title={quiz.title} timeLeft={timeLeft} />
                         <div className="flex h-auto">
                             <QuestionPanel
-                                {...{ quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps }}
+                                {...{ quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps, handleSubmit }}
                             />
                             <NavigationPanel {...{ questionStatus, statusCountArr, quiz, questionIdx, setQuestionIdx, handleQuestionStatus, selectedAnswers, handleTimestamps }} />
                         </div>

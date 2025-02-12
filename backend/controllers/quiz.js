@@ -55,28 +55,46 @@ const getOne = async (req, res) => {
 
 const evaluate = async (req, res) => {
     try {
-        const id = req.params.id;
-
+        const quizId = req.params.id;
         const userEmail = req.user.email;
+
+        console.log("userEmail: ", userEmail);
+
         const user = await User.findOne({ email: userEmail });
         if (!user) return res.status(404).json("User not found");
-        const userAnswers = req.body.userAnswers;
+
+        const { userAnswers, timeSpent } = req.body;
         let myMarks = 0;
-        const quiz = await Quiz.findById(id);
+
+        const quiz = await Quiz.findById(quizId);
         if (!quiz) return res.status(404).json("Quiz not found");
+
         for (let i = 0; i < quiz.questions.length; i++) {
             const question = quiz.questions[i];
-            if (question.correctAnswer == userAnswers[i]) myMarks++;
+            if (String(question.correctAnswer) === String(userAnswers[i])) myMarks++;
         }
-        user.marks.set(id, myMarks);
+
+        const correctAnswersArr = quiz.questions.map((question) => question.correctAnswer)
+
+        const resultObj = {
+            score: myMarks,
+            maxScore: quiz.questions.length,
+            markedAnswers: userAnswers,
+            correctAnswers: correctAnswersArr,
+            timeSpent
+        };
+
+        // Ensure result is stored with the quizId as the key
+        user.result.set(quizId, resultObj);
 
         await user.save();
-        res.status(200).json({ message: "Quiz evaluated successfully", score: myMarks });
+
+        res.status(200).json({ message: "Quiz evaluated successfully", report: resultObj });
     } catch (error) {
         console.log("error: ", error);
         res.status(500).json({ error: error.message });
     }
-}
+};
 
 const getQuizLeaderboard = async (req, res) => {
     try {
