@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAllQuizzes, fetchQuiz } from "./api";
+import { fetchAllQuizzes, fetchQuiz, fetchTeacherQuizzes } from "./api";
 
 const initialState = {
     quizzes: {},
     loading: false,
-    error: null
+    error: null,
+    quizzesByTeacher:{}
 }
 
 const slice = createSlice({
@@ -40,6 +41,23 @@ const slice = createSlice({
                 state.error = null
             })
             .addCase(fetchQuiz.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+            .addCase(fetchTeacherQuizzes.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(fetchTeacherQuizzes.fulfilled, (state, action) => {
+                state.loading = false;
+
+                const { email, quizzes: quizzes1 } = action.payload;
+                state.quizzesByTeacher = {
+                    ...state.quizzesByTeacher,
+                    [email]: quizzes1
+                };
+                state.error = null;
+            })            
+            .addCase(fetchTeacherQuizzes.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

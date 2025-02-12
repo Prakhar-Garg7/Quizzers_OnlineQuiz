@@ -10,13 +10,14 @@ const create = async (req, res) => {
         if (!title || !description || !questions || !startTime || !duration) {
             res.status(400).json({ message: "Either title or description or questions or startTime or duration or imageUrl are not provided" });
         }
-        const newQuiz = new Quiz({ title, description, questions, startTime: new Date(startTime).toISOString(), duration, imageUrl });
-        await newQuiz.save();
-
         const user = await User.findOne({ email: req.user.email });
         if (!user) {
             res.status(404).json("User not found");
         }
+
+        const newQuiz = new Quiz({ title, description, questions, startTime: new Date(startTime).toISOString(), duration, imageUrl, creator: user._id });
+        await newQuiz.save();
+
 
         if (!user.createdQuizzes) {
             user.createdQuizzes = [];
@@ -52,6 +53,27 @@ const getOne = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+const getTeacherQuizzes = async (req, res) => {
+    try {
+        const { email } = req.user;
+
+        // Find user by email and populate createdQuizzes
+        const user = await User.findOne({ email }).populate('createdQuizzes').exec();
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Extract quizzes after population
+        const quizzes = user.createdQuizzes;
+
+        res.status(200).json({ message: "Quizzes fetched successfully", quizzes, email });
+    } catch (error) {
+        console.error("Error fetching teacher quizzes:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 const evaluate = async (req, res) => {
     try {
@@ -165,4 +187,4 @@ const getFullLeaderboard = async (req, res) => {
     }
 }
 
-module.exports = { create, getAll, getOne, evaluate, getQuizLeaderboard, getFullLeaderboard };
+module.exports = { create, getAll, getOne, evaluate, getQuizLeaderboard, getFullLeaderboard, getTeacherQuizzes };

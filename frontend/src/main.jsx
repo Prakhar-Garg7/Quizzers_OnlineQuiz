@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+
 import { createBrowserRouter, RouterProvider, createRoutesFromElements, Route } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
@@ -7,7 +8,6 @@ import Home from './components/home/home.jsx'
 import About from './components/AboutUs/About.jsx'
 import ContactUs from './components/contact/ContactUs.jsx'
 import User from './components/user/user.jsx'
-import Github from './components/github/github.jsx'
 import Login from './components/login/Login.jsx'
 import Signup from './components/signup/Signup.jsx'
 import CreateQuiz from './components/createquiz/Create.jsx'
@@ -19,30 +19,34 @@ import VerifyEmail from './components/signup/Verifyemail.jsx'
 import AllQuizzes from './components/Allquizes/Allquiz.jsx'
 import { Provider } from 'react-redux'
 import { store, persistor } from "./store/index.js"
-import {PersistGate} from "redux-persist/integration/react"
+import { PersistGate } from "redux-persist/integration/react"
 import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
 import TakeQuiz from './components/takeQuiz/TakeQuiz.jsx'
-import QuizReport from './components/quizReportPage/quizReport.jsx'
+import ProtectedRoute from './components/Protectedroutes/Protectedroute.jsx'
+import Adminprofile from './components/adminprofile/Adminprofile.jsx'import QuizReport from './components/quizReportPage/quizReport.jsx'
 
 const router = createBrowserRouter(
-  createRoutesFromElements(
+  createRoutesFromElements( 
     <Route path='/' element={<App />}>
       <Route path='' element={<Home />} />
       <Route path='about' element={<About />} />
       <Route path='contact' element={<ContactUs />} />
-      <Route path='user/:id' element={<User />} />
-      <Route path='github' element={<Github />} />
       <Route path='login' element={<Login />} />
       <Route path='signup' element={<Signup />} />
-      <Route path='createquiz' element={<CreateQuiz />} />
       <Route path='forgot-password' element={<ForgotPassword />} />
       <Route path='verify-otp' element={<VerifyOTP />} />
       <Route path='reset-password' element={<ResetPassword />} />
       <Route path='verifyemailsent' element={<VerifyEmailSent />} />
       <Route path='verify-email/:token/:email' element={<VerifyEmail />} />
-      <Route path='takequiz/:quizId' element={<TakeQuiz />} />
-      <Route path='allquizes' element={<AllQuizzes />} />
-      <Route path='report/:quizId' element={<QuizReport />} />
+      <Route path='admin' element={<Adminprofile />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path='createquiz' element={<CreateQuiz />} />
+        <Route path='takequiz/:quizId' element={<TakeQuiz />} />
+        <Route path='allquizes' element={<AllQuizzes />} />
+        <Route path='user/:id' element={<User />} />
+
+      </Route>
 
     </Route>
   )
@@ -52,7 +56,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
       <PersistGate loading={<LoadingPage />} persistor={persistor}>
-        <RouterProvider router={router} />
+          <RouterProvider router={router} />
       </PersistGate>
     </Provider>
   </StrictMode>,

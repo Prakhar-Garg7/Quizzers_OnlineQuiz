@@ -5,6 +5,7 @@ import uploadImageReducer from "../features/uploadImage/slice"
 import createQuizReducer from "../features/createQuiz/slice"
 import createQuizAutoSaveReducer from "../features/createQuizAutoSave/slice"
 import getQuizReportReducer from "../features/getQuizReport/slice"
+import userSlice from "../features/userSlice/slice";
 
 const rootReducer = combineReducers({
     getQuiz: getQuizReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     uploadImage: uploadImageReducer,
     createQuiz: createQuizReducer,
     createQuizAutoSave: createQuizAutoSaveReducer,
-    getQuizReport: getQuizReportReducer
+    getQuizReport: getQuizReportReducer,
+    user:userSlice
 })
 
 export default rootReducer;
