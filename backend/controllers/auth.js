@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "secret_key";
 
 const register = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password,role="student" } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ message: "All fields are required" });
@@ -25,6 +25,7 @@ const register = async (req, res) => {
         const newUser = new User({
             email,
             password: hashedPassword,
+            role,
         });
 
         await newUser.save();

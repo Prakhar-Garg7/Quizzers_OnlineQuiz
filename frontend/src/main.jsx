@@ -23,8 +23,9 @@ import { PersistGate } from "redux-persist/integration/react"
 import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
 import TakeQuiz from './components/takeQuiz/TakeQuiz.jsx'
 import ProtectedRoute from './components/Protectedroutes/Protectedroute.jsx'
+import Adminprofile from './components/adminprofile/Adminprofile.jsx'
 const router = createBrowserRouter(
-  createRoutesFromElements(
+  createRoutesFromElements( 
     <Route path='/' element={<App />}>
       <Route path='' element={<Home />} />
       <Route path='about' element={<About />} />
@@ -36,6 +37,8 @@ const router = createBrowserRouter(
       <Route path='reset-password' element={<ResetPassword />} />
       <Route path='verifyemailsent' element={<VerifyEmailSent />} />
       <Route path='verify-email/:token/:email' element={<VerifyEmail />} />
+      <Route path='admin' element={<Adminprofile />} />
+
       <Route element={<ProtectedRoute />}>
         <Route path='createquiz' element={<CreateQuiz />} />
         <Route path='takequiz/:quizId' element={<TakeQuiz />} />

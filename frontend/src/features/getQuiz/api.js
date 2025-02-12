@@ -37,3 +37,22 @@ export const fetchQuiz = createAsyncThunk(
         }
     }
 )
+
+export const fetchTeacherQuizzes = createAsyncThunk(
+    'getQuiz/fetchTeacherQuizzes',
+    async (_, thunkAPI) => {
+        try {
+            const res = await axios.get(`${config.backend_url}/api/quiz/teacher`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
+                }
+            )
+            return res.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || error.response?.data || error.message || "Something went wrong"
+            );
+        }
+    }
+);

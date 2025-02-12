@@ -10,7 +10,12 @@ const schema = new mongoose.Schema({
         options:[{desc: {type: String}}],
         correctAnswer:{type: Number},
         imageUrl:{type: String}
-    }]
+    }],
+    creator:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:"User",
+        required:true
+    }
 });
 
 const Quiz = mongoose.model('Quiz', schema);
