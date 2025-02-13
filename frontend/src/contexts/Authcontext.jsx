@@ -1,4 +1,4 @@
-import { config } from "../../config"
+import { config } from "../config"
 
 export const login = async (email, password) => {
     try {
