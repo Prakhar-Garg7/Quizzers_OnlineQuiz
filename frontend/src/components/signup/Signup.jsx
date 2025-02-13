@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { setUser } from "../../features/userSlice/slice";
+import { config } from "../../config"
 
 export default function Signup() {
     const dispatch = useDispatch()
@@ -50,7 +51,7 @@ export default function Signup() {
         if (!hasErrors) {
             // Send data to backend
             try {
-                const response = await fetch("http://localhost:4003/api/auth/signup",
+                const response = await fetch(`${config.backend_url}/api/auth/signup`,
                     {
                         method: "POST",
                         credentials: "include",
@@ -62,7 +63,7 @@ export default function Signup() {
 
                 if (response.ok) {
                     dispatch(setUser(response))
-                    const res = await fetch("http://localhost:4003/api/auth/sendEmail",
+                    const res = await fetch(`${config.backend_url}/api/auth/sendEmail`,
                         {
                             method: "POST",
                             credentials: "include",
