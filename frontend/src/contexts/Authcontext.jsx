@@ -1,6 +1,8 @@
+import { config } from "../../config"
+
 export const login = async (email, password) => {
     try {
-        const response = await fetch("http://localhost:4003/api/auth/login",
+        const response = await fetch(`${config.backend_url}/api/auth/login`,
             {
                 method: "POST",
                 credentials: "include",
@@ -24,7 +26,7 @@ export const login = async (email, password) => {
 
 export const logout = async () => {
     try {
-        const response = await fetch("http://localhost:4003/api/auth/logout", {
+        const response = await fetch(`${config.backend_url}/api/auth/logout`, {
             method: "POST",
             credentials: "include",
         }); 
