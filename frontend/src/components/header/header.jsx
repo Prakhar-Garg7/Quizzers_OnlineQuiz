@@ -39,8 +39,8 @@ export default function Header() {
                         {user && (
                             <>
                                 <NavLink to="/admin" className={({ isActive }) => `text-sm ${isActive ? "text-orange-500" : "text-gray-700"} hover:text-orange-700`}>Profile</NavLink>
+                                <NavLink to="/allquizes" className={({ isActive }) => `text-sm ${isActive ? "text-orange-500" : "text-gray-700"} hover:text-orange-700`}>All Quiz</NavLink>
                                 {user.role === "teacher" && (<NavLink to="/createquiz" className={({ isActive }) => `text-sm ${isActive ? "text-orange-500" : "text-gray-700"} hover:text-orange-700`}>Create Quiz</NavLink>)}
-                                {user.role === "student" && (<NavLink to="/allquizes" className={({ isActive }) => `text-sm ${isActive ? "text-orange-500" : "text-gray-700"} hover:text-orange-700`}>All Quiz</NavLink>)}
                             </>
                         )}
                         <NavLink to="/contact" className={({ isActive }) => `text-sm ${isActive ? "text-orange-500" : "text-gray-700"} hover:text-orange-700`}>Contact Us</NavLink>
@@ -87,7 +87,7 @@ export default function Header() {
                             {user && (
                                 <>
                                     {user.role === "teacher" && (<NavLink to="/createquiz" className="text-lg text-gray-700 hover:text-orange-700" onClick={() => setIsOpen(false)}>Create Quiz</NavLink>)}
-                                    {user.role === "student" && (<NavLink to="/allquizes" className="text-lg text-gray-700 hover:text-orange-700" onClick={() => setIsOpen(false)}>All Quiz</NavLink>)}
+                                    <NavLink to="/allquizes" className="text-lg text-gray-700 hover:text-orange-700" onClick={() => setIsOpen(false)}>All Quiz</NavLink>
                                     <NavLink to="/admin" className="text-lg text-gray-700 hover:text-orange-700" onClick={() => setIsOpen(false)}>Profile</NavLink>
                                 </>
                             )}

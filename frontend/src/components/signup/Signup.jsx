@@ -62,7 +62,8 @@ export default function Signup() {
                     });
 
                 if (response.ok) {
-                    dispatch(setUser(response))
+                    const data = await response.json();
+                    dispatch(setUser(data))
                     const res = await fetch(`${config.backend_url}/api/auth/sendEmail`,
                         {
                             method: "POST",

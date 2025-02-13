@@ -1,7 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+    // const {email, role} = useSelector((state) => state.user)
+    // console.log("email: ", email, ", role: ", role)
     return (
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             {/* Hero Section */}
