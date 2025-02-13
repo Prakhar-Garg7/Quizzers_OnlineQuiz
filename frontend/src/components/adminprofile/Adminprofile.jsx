@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchTeacherQuizzes } from "../../features/getQuiz/api";
 import LoadingPage from "../LoadingPage/LoadingPage";
 import ErrorPage from "../ErrorPage/ErrorPage";
-import { resetState } from "../../features/quizAutoSave/slice";
 
 export default function TeacherProfile() {
     const navigate = useNavigate();
@@ -16,7 +15,7 @@ export default function TeacherProfile() {
     const { email } = useSelector((state) => state.user);
 
     useEffect(() => {
-        dispatch(fetchTeacherQuizzes());
+        if(!quizzesByTeacher || !email || !quizzesByTeacher[email]) dispatch(fetchTeacherQuizzes());
     }, [dispatch]);
 
     useEffect(() => {
@@ -59,12 +58,6 @@ export default function TeacherProfile() {
                     <p className="text-gray-500">No quizzes created yet.</p>
                 )}
             </div>
-            <button
-                className="mt-6 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                onClick={() => dispatch(resetState())}
-            >
-                Delete quizAutoSave Data
-            </button>
         </div>
     );
 }

@@ -17,13 +17,16 @@ import ResetPassword from './components/Resetnewpassword/Resetnewpass.jsx'
 import VerifyEmailSent from './components/signup/Verifyemailsent.jsx'
 import VerifyEmail from './components/signup/Verifyemail.jsx'
 import AllQuizzes from './components/Allquizes/Allquiz.jsx'
-import { Provider } from 'react-redux'
+import { Provider, useSelector } from 'react-redux'
 import { store, persistor } from "./store/index.js"
 import { PersistGate } from "redux-persist/integration/react"
 import LoadingPage from './components/LoadingPage/LoadingPage.jsx'
 import TakeQuiz from './components/takeQuiz/TakeQuiz.jsx'
 import ProtectedRoute from './components/Protectedroutes/Protectedroute.jsx'
-import Adminprofile from './components/adminprofile/Adminprofile.jsx'import QuizReport from './components/quizReportPage/quizReport.jsx'
+import Adminprofile from './components/adminprofile/Adminprofile.jsx'
+import QuizReport from './components/quizReportPage/quizReport.jsx'
+import ErrorPage from './components/ErrorPage/ErrorPage.jsx'
+import TeacherProfile from './components/adminprofile/Adminprofile.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements( 
@@ -38,11 +41,17 @@ const router = createBrowserRouter(
       <Route path='reset-password' element={<ResetPassword />} />
       <Route path='verifyemailsent' element={<VerifyEmailSent />} />
       <Route path='verify-email/:token/:email' element={<VerifyEmail />} />
-      <Route path='admin' element={<Adminprofile />} />
+
+      <Route element={<ProtectedRoute allowedRole="teacher" />}>
+        <Route path='admin' element={<TeacherProfile/>} />
+        <Route path='createquiz' element={<CreateQuiz />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRole="student" />}>
+        <Route path='takequiz/:quizId' element={<TakeQuiz />} />
+      </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route path='createquiz' element={<CreateQuiz />} />
-        <Route path='takequiz/:quizId' element={<TakeQuiz />} />
         <Route path='allquizes' element={<AllQuizzes />} />
         <Route path='user/:id' element={<User />} />
 

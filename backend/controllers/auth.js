@@ -9,9 +9,9 @@ const JWT_SECRET = process.env.JWT_SECRET || "secret_key";
 
 const register = async (req, res) => {
     try {
-        const { email, password,role="student" } = req.body;
+        const { name, role, email, password } = req.body;
 
-        if (!email || !password) {
+        if (!name || !role || !email || !password) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
@@ -23,9 +23,10 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
+            name,
+            role,
             email,
             password: hashedPassword,
-            role,
         });
 
         await newUser.save();
@@ -41,7 +42,7 @@ const register = async (req, res) => {
             maxAge: 3600000 * 24 * 5,
         });
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully', name, role });
     } catch (error) {
         console.error('Error during registration:', error);
         res.status(500).json({ message: error.message });
@@ -78,7 +79,7 @@ const login = async (req, res) => {
             maxAge: 3600000 * 24 * 5,
         });
 
-        res.status(201).json({ message: 'User login successfully' });
+        res.status(200).json({ message: 'User login successfully', role: user.role });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ message: error.message });

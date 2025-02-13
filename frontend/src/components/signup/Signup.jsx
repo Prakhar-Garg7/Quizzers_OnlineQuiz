@@ -1,11 +1,17 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { setUser } from "../../features/userSlice/slice";
 
 export default function Signup() {
+    const dispatch = useDispatch()
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [userrole, setUserrole] = useState("student");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [errors, setErrors] = useState({ email: "", password: "", confirmPassword: "" });
+    const [errors, setErrors] = useState({ username: "", userrole: "", email: "", password: "", confirmPassword: "" });
+    const roleOptions = ["student", "teacher"]
 
     const navigate = useNavigate();
     // Email format validation
@@ -19,7 +25,7 @@ export default function Signup() {
         e.preventDefault();
 
         let hasErrors = false;
-        const newErrors = { email: "", password: "", confirmPassword: "" };
+        const newErrors = { username: "", userrole: "", email: "", password: "", confirmPassword: "" };
 
         // Validate email
         if (!validateEmail(email)) {
@@ -51,10 +57,11 @@ export default function Signup() {
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ email, password }),
+                        body: JSON.stringify({ name: username, role: userrole, email, password }),
                     });
 
                 if (response.ok) {
+                    dispatch(setUser(response))
                     const res = await fetch("http://localhost:4003/api/auth/sendEmail",
                         {
                             method: "POST",
@@ -62,17 +69,16 @@ export default function Signup() {
                             headers: {
                                 "Content-Type": "application/json",
                             },
-                            body: JSON.stringify({ email, subject: "EmailVerification"  }),
+                            body: JSON.stringify({ email, subject: "EmailVerification" }),
                         });
-                        if(res.ok)
-                        {
-                            alert("Verification email sent");
-                            navigate("/verifyemailsent", { state: { email } });
-                        }
-                        else{
-                            const er=await res.json();
-                            alert(`Error: ${er.message}`);
-                        }
+                    if (res.ok) {
+                        alert("Verification email sent");
+                        navigate("/verifyemailsent", { state: { email } });
+                    }
+                    else {
+                        const er = await res.json();
+                        alert(`Error: ${er.message}`);
+                    }
                 } else {
                     const errorData = await response.json();
                     alert(`Error: ${errorData.message}`);
@@ -92,6 +98,43 @@ export default function Signup() {
                     <p className="text-gray-600 text-center mt-4">Join Quizzers and start your journey today!</p>
 
                     <form className="space-y-6 mt-10" onSubmit={handleSubmit}>
+
+                        {/* Name Input */}
+                        <div>
+                            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                                Username
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                placeholder="Enter your name"
+                                className={`mt-1 block w-full px-4 py-3 border ${errors.username ? "border-red-500" : "border-gray-300"
+                                    } rounded-lg shadow-sm focus:ring-orange-700 focus:border-orange-700 sm:text-sm`}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                            />
+                            {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
+                        </div>
+
+                        {/* Role Input */}
+                        <div>
+                            <label htmlFor="userrole" className="block text-sm font-medium text-gray-700">
+                                Role
+                            </label>
+                            <select value={userrole} onChange={(e) => setUserrole(e.target.value)} 
+                                className={`mt-1 block w-full px-4 py-3 border ${errors.username ? "border-red-500" : "border-gray-300"
+                                } rounded-lg shadow-sm focus:ring-orange-700 focus:border-orange-700 sm:text-sm`}    
+                            >
+                                {roleOptions.map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.userrole && <p className="text-red-500 text-sm mt-1">{errors.userrole}</p>}
+                        </div>
+
                         {/* Email Input */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
