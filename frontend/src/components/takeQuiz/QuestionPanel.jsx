@@ -27,67 +27,67 @@ export default function QuestionPanel(props) {
                         </div>
                     ))}
 
-                    <hr className="border-t-1 border-black mt-5 mb-2" />
+                    <hr className="border-t-1 border-[#8a8a8a] mt-5 mb-2" />
 
                     <button
-                        className="p-1 text-white font-bold mx-2 bg-green-700"
+                        className="p-1 text-white font-bold mx-2 bg-green-700 rounded-md px-2"
                         onClick={() => {
                             if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                             else handleQuestionStatus(questionIdx, 0)
                             setQuestionIdx(Math.min(questionIdx + 1, quiz.questions.length - 1))
                         }}
                     >
-                        SAVE AND NEXT
+                        Save and Next
                     </button>
                     <button
-                        className="p-1 text-white font-bold mx-2 bg-blue-400"
+                        className="p-1 text-white font-bold mx-2 bg-blue-700 rounded-md px-2"
                         onClick={() => {
                             if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 2)
                             else handleQuestionStatus(questionIdx, 0)
                         }}
                     >
-                        SAVE AND MARK FOR REVIEW
+                        Save and Mark for Review
                     </button>
                     <button
-                        className="p-1 text-black font-bold border-2 border-black mx-2 bg-white"
+                        className="p-1 text-white font-bold mx-2 bg-red-600 rounded-md px-2"
                         onClick={() => {
                             handleQuestionStatus(questionIdx, 0)
                             handleSelectedAnswers(questionIdx, -1)
                         }}
                     >
-                        CLEAR RESPONSE
+                        Clear Response
                     </button>
                     <button
-                        className="p-1 text-white font-bold mx-2 bg-blue-200"
+                        className="p-1 text-white font-bold mx-2 bg-purple-700 rounded-md px-2"
                         onClick={() => {
                             handleQuestionStatus(questionIdx, 1)
                             handleSelectedAnswers(questionIdx, -1)
                             setQuestionIdx(Math.min(questionIdx + 1, quiz.questions.length - 1))
                         }}
                     >
-                        MARK FOR REVIEW AND NEXT
+                        Mark for Review and Next
                     </button>
 
                     <div className="w-full flex justify-between py-2 px-2 mt-3 border-t-2 border-slate-300 bg-slate-100">
                         <div>
-                            <button className="px-2 py-2 mr-2 bg-white border-2 border-slate-300 font-bold" onClick={() => {
+                            <button className="px-4 py-1 mr-2 bg-white border-2 border-slate-300 font-bold rounded-lg" onClick={() => {
                                 if(questionStatus[questionIdx] != 2){
                                     if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                                     else handleQuestionStatus(questionIdx, 0)
                                 }
                                 handleTimestamps(questionIdx, 1)
                                 setQuestionIdx(Math.max(questionIdx - 1, 0))
-                            }}>BACK</button>
-                            <button className="px-2 py-2 mr-2 bg-white border-2 border-slate-300 font-bold" onClick={() => {
+                            }}>Prev</button>
+                            <button className="px-4 py-1 mr-2 bg-white border-2 border-slate-300 font-bold rounded-lg" onClick={() => {
                                 if(questionStatus[questionIdx] != 2){
                                     if (selectedAnswers[questionIdx] != -1) handleQuestionStatus(questionIdx, 3)
                                     else handleQuestionStatus(questionIdx, 0)
                                 }
                                 handleTimestamps(questionIdx, 1)
                                 setQuestionIdx(Math.min(questionIdx + 1, quiz.questions.length - 1))
-                            }}>NEXT</button>
+                            }}>Next</button>
                         </div>
-                        <button className="px-2 py-2 mr-2 bg-green-600 text-white font-bold" onClick={handleSubmit}>SUBMIT</button>
+                        <button className="px-4 py-1 mr-2 bg-green-600 text-white font-bold rounded-lg" onClick={handleSubmit}>End Test</button>
                     </div>
                 </>
             )}

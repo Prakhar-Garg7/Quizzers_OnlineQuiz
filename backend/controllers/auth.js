@@ -42,7 +42,7 @@ const register = async (req, res) => {
             maxAge: 3600000 * 24 * 5,
         });
 
-        res.status(201).json({ message: 'User registered successfully', name, role });
+        res.status(201).json({ message: 'User registered successfully', name: newUser.name, email: newUser.email, role });
     } catch (error) {
         console.error('Error during registration:', error);
         res.status(500).json({ message: error.message });
@@ -79,7 +79,7 @@ const login = async (req, res) => {
             maxAge: 3600000 * 24 * 5,
         });
 
-        res.status(200).json({ message: 'User login successfully', role: user.role });
+        res.status(200).json({ message: 'User login successfully', name: user.name, email: user.email, role: user.role });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ message: error.message });
