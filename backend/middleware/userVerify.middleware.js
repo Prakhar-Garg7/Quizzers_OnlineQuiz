@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 
 const decodeToken = (req, res, next) => {
+    console.log("Entered decodeToken function")
+
     const token = req.cookies.token;
 
     if(! token){

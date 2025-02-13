@@ -38,7 +38,6 @@ export default function Login() {
             try{
                 const result = await login(email, password);
                 dispatch(setUser(result));
-                console.log(result)
                 alert("Login successfull")
                 navigate("/")
             }catch(error){

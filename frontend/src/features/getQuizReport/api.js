@@ -7,13 +7,14 @@ export const getQuizReport = createAsyncThunk(
     async (params, thunkAPI) => {
         try {
             const {userAnswers, timeSpent} = params;
-            const res = await axios.get(`${config.backend_url}/api/quiz/evaluate/${params.id}`,
+            const res = await axios.post(`${config.backend_url}/api/quiz/evaluate/${params.id}`,
                 {
-                    headers: { "Content-Type": "application/json" },
-                    withCredentials: true,
-                },{
                     userAnswers,
                     timeSpent
+                }
+                ,{
+                    headers: { "Content-Type": "application/json" },
+                    withCredentials: true,
                 }
             )
             return res.data;

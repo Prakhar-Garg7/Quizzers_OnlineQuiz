@@ -1,10 +1,7 @@
 import { FaArrowCircleDown } from "react-icons/fa";
 
 export default function QuestionPanel(props) {
-    const { quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps } = props;
-    const handleSubmit = () => {
-        
-    }
+    const { quiz, question, questionIdx, setQuestionIdx, selectedAnswers, handleSelectedAnswers, handleQuestionStatus, questionStatus, statusCountArr, handleTimestamps, handleSubmit } = props;
     return (
         <div className="w-[70%] h-auto py-10 px-7">
             {question && (
@@ -90,7 +87,7 @@ export default function QuestionPanel(props) {
                                 setQuestionIdx(Math.min(questionIdx + 1, quiz.questions.length - 1))
                             }}>NEXT</button>
                         </div>
-                        <button className="px-2 py-2 mr-2 bg-green-600 text-white font-bold" onClick={() => handleSubmit}>SUBMIT</button>
+                        <button className="px-2 py-2 mr-2 bg-green-600 text-white font-bold" onClick={handleSubmit}>SUBMIT</button>
                     </div>
                 </>
             )}

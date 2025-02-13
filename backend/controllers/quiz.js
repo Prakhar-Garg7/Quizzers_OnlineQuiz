@@ -77,11 +77,12 @@ const getTeacherQuizzes = async (req, res) => {
 
 const evaluate = async (req, res) => {
     try {
+
+        console.log("Entered evaluate function")
+
         const quizId = req.params.id;
         const userEmail = req.user.email;
-
-        console.log("userEmail: ", userEmail);
-
+        
         const user = await User.findOne({ email: userEmail });
         if (!user) return res.status(404).json("User not found");
 
@@ -105,6 +106,8 @@ const evaluate = async (req, res) => {
             correctAnswers: correctAnswersArr,
             timeSpent
         };
+
+        console.log("resultObj in backend: ", resultObj)
 
         // Ensure result is stored with the quizId as the key
         user.result.set(quizId, resultObj);

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchQuiz } from '../src/features/getQuiz/api';
-import { setAnswer, setQIdx, setStatus, setTimestamps as setSliceTimestamps } from '../src/features/quizAutoSave/slice';
+import { setAnswer, setQIdx, setStatus, setTimestamps as setSliceTimestamps, resetState } from '../src/features/quizAutoSave/slice';
 import { getQuizReport } from '../src/features/getQuizReport/api';
 
 export default function useQuizHandler(quizId) {
@@ -33,7 +33,8 @@ export default function useQuizHandler(quizId) {
         for(let i = 0; i < quiz.questions.length; i++) {
             newTimeStamps[i] = timestamps[i].timeSpent;
         }
-        dispatch(getQuizReport({userAnswers: newSelectedAnswers, timeSpent: newTimeStamps}))
+        dispatch(getQuizReport({id: quizId, userAnswers: newSelectedAnswers, timeSpent: newTimeStamps}))
+        dispatch(resetState())
         navigate(`/report/${quizId}`);
     }
 

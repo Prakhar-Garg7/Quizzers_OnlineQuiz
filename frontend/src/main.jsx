@@ -49,6 +49,7 @@ const router = createBrowserRouter(
 
       <Route element={<ProtectedRoute allowedRole="student" />}>
         <Route path='takequiz/:quizId' element={<TakeQuiz />} />
+        <Route path='report/:quizId' element={<QuizReport />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>
